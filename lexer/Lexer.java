@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
 public class Lexer {
@@ -27,13 +26,14 @@ public class Lexer {
         this.errorList = errorList;
     }
 
-    public void lex() {
+    public ArrayList<Token> lex() {
         while (nowat < size) {
             Token token = getToken();
             if (token != null) {
                 tokens.add(token);
             }
         }
+        return tokens;
     }
 
     private Token getToken() {
@@ -165,8 +165,14 @@ public class Lexer {
             if (content.equals("!")) {
                 return new Token(TokenType.NOT, content, nowline);
             }
+            else if (content.equals("&")) {
+                return new Token(TokenType.AND, content, nowline);
+            }
             else if (content.equals("&&")) {
                 return new Token(TokenType.AND, content, nowline);
+            }
+            else if (content.equals("|")) {
+                return new Token(TokenType.OR, content, nowline);
             }
             else if (content.equals("||")) {
                 return new Token(TokenType.OR, content, nowline);

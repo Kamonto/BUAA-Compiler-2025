@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ErrorList {
     private ArrayList<Error> errors;
@@ -18,7 +18,12 @@ public class ErrorList {
         errors.add(error);
     }
 
+    public boolean hasError() {
+        return !errors.isEmpty();
+    }
+
     public void printError() throws IOException {
+        Collections.sort(errors);
         StringBuilder strb = new StringBuilder();
         for (Error error : errors) {
             strb.append(error.getLine()).append(" ").append(error.getType()).append("\n");
