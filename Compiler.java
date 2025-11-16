@@ -3,6 +3,8 @@ import lexer.Lexer;
 import lexer.Token;
 import parser.CompUnit;
 import parser.Parser;
+import symbolizer.Symbolizer;
+import symbolizer.SymbolTable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,12 +21,12 @@ public class Compiler {
 
         Lexer lexer = new Lexer(code, errorList);
         ArrayList<Token> tokens = lexer.lex();
-//        if (errorList.hasError()) {
-//            errorList.printError();
-//        }
-//        else {
-//            lexer.printToken();
-//        }
+        if (errorList.hasError()) {
+            errorList.printError();
+        }
+        else {
+            lexer.printToken();
+        }
 
         Parser parser = new Parser(tokens, errorList);
         CompUnit compUnit = parser.parse();
@@ -33,6 +35,15 @@ public class Compiler {
         }
         else {
             parser.printAST();
+        }
+
+        Symbolizer symbolizer = new Symbolizer(compUnit, errorList);
+        SymbolTable symbols = symbolizer.symbolize();
+        if (errorList.hasError()) {
+            errorList.printError();
+        }
+        else {
+            symbolizer.printSymbols();
         }
     }
 }

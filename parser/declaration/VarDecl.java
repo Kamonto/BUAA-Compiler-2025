@@ -1,6 +1,8 @@
 package parser.declaration;
 
 import parser.type.BType;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
 
 import java.util.ArrayList;
 
@@ -30,5 +32,11 @@ public class VarDecl implements Decl {
         }
         strb.append("SEMICN ;\n");
         strb.append("<VarDecl>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        for (VarDef varDef : varDefs) {
+            varDef.symbolize(isStatic, bType, symbols, scope);
+        }
     }
 }

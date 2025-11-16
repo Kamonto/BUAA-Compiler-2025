@@ -1,5 +1,8 @@
 package parser.block;
 
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
+
 public class StmtFor implements Stmt {
     private boolean hasFormerForStmt;
     private ForStmt forStmt;
@@ -37,5 +40,20 @@ public class StmtFor implements Stmt {
         strb.append("RPARENT )\n");
         stmt.print(strb);
         strb.append("<Stmt>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        if (hasFormerForStmt) {
+            forStmt.symbolize(symbols, scope);
+        }
+        if (hasCond) {
+            cond.symbolize(symbols, scope);
+        }
+        if (hasLatterForStmt) {
+            anoForStmt.symbolize(symbols, scope);
+        }
+        scope.entryLoop();
+        stmt.symbolize(symbols, scope);
+        scope.exitLoop();
     }
 }

@@ -1,5 +1,9 @@
 package parser.expression;
 
+import symbolizer.FuncSymbol;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
+
 import java.util.ArrayList;
 
 public class FuncRParams {
@@ -19,5 +23,11 @@ public class FuncRParams {
             }
         }
         strb.append("<FuncRParams>\n");
+    }
+
+    public void symbolize(FuncSymbol funcSymbol, SymbolTable symbols, Scope scope) {
+        for (Exp exp : exps) {
+            funcSymbol.addParam(exp.isArray(symbols, scope));
+        }
     }
 }

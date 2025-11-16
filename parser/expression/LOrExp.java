@@ -1,5 +1,8 @@
 package parser.expression;
 
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
+
 import java.util.ArrayList;
 
 public class LOrExp {
@@ -19,6 +22,12 @@ public class LOrExp {
                 lAndExps.get(i).print(strb);
                 strb.append("<LOrExp>\n");
             }
+        }
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        for (LAndExp lAndExp : lAndExps) {
+            lAndExp.symbolize(symbols, scope);
         }
     }
 }

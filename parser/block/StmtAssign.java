@@ -2,6 +2,8 @@ package parser.block;
 
 import parser.expression.Exp;
 import parser.expression.LVal;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
 
 public class StmtAssign implements Stmt {
     private LVal lVal;
@@ -18,5 +20,10 @@ public class StmtAssign implements Stmt {
         exp.print(strb);
         strb.append("SEMICN ;\n");
         strb.append("<Stmt>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        lVal.symbolize(true, symbols, scope);
+        exp.symbolize(symbols, scope);
     }
 }

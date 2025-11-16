@@ -2,6 +2,8 @@ package parser.block;
 
 import parser.expression.Exp;
 import parser.expression.LVal;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
 
 import java.util.ArrayList;
 
@@ -29,5 +31,14 @@ public class ForStmt {
             }
         }
         strb.append("<ForStmt>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        for (LVal lVal : lVals) {
+            lVal.symbolize(true, symbols, scope);
+        }
+        for (Exp exp : exps) {
+            exp.symbolize(symbols, scope);
+        }
     }
 }

@@ -1,5 +1,9 @@
 package parser.expression;
 
+import symbolizer.FuncSymbol;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
+
 import java.util.ArrayList;
 
 public class MulExp {
@@ -27,5 +31,20 @@ public class MulExp {
             unaryExps.get(i).print(strb);
             strb.append("<MulExp>\n");
         }
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        for (UnaryExp unaryExp : unaryExps) {
+            unaryExp.symbolize(symbols, scope);
+        }
+    }
+
+    public boolean isArray(SymbolTable symbols, Scope scope) {
+        for (UnaryExp unaryExp : unaryExps) {
+            if (unaryExp.isArray(symbols, scope)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

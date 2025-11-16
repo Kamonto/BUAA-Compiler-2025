@@ -1,6 +1,8 @@
 package parser.declaration;
 
 import parser.expression.ConstExp;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
 
 import java.util.ArrayList;
 
@@ -31,5 +33,9 @@ public class ConstInitVal {
             constExp.print(strb);
         }
         strb.append("<ConstInitVal>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+
     }
 }

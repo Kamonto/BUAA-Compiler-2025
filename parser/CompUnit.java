@@ -3,6 +3,8 @@ package parser;
 import parser.block.MainFuncDef;
 import parser.declaration.Decl;
 import parser.function.FuncDef;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
 
 import java.util.ArrayList;
 
@@ -26,5 +28,15 @@ public class CompUnit {
         }
         mainFuncDef.print(strb);
         strb.append("<CompUnit>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        for (Decl decl : decls) {
+            decl.symbolize(symbols, scope);
+        }
+        for (FuncDef funcDef : funcDefs) {
+            funcDef.symbolize(symbols, scope);
+        }
+        mainFuncDef.symbolize(symbols, scope);
     }
 }

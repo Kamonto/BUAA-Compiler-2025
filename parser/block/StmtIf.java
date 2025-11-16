@@ -1,5 +1,8 @@
 package parser.block;
 
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
+
 public class StmtIf implements Stmt {
     private Cond cond;
     private Stmt stmt;
@@ -24,5 +27,12 @@ public class StmtIf implements Stmt {
             anostmt.print(strb);
         }
         strb.append("<Stmt>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        stmt.symbolize(symbols, scope);
+        if (hasElse) {
+            anostmt.symbolize(symbols, scope);
+        }
     }
 }

@@ -1,7 +1,8 @@
 package parser.declaration;
 
-import parser.expression.ConstExp;
 import parser.expression.Exp;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
 
 import java.util.ArrayList;
 
@@ -32,5 +33,9 @@ public class InitVal {
             exp.print(strb);
         }
         strb.append("<InitVal>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+
     }
 }

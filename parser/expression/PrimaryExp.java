@@ -1,5 +1,11 @@
 package parser.expression;
 
+import symbolizer.FuncSymbol;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
+
+import java.util.ArrayList;
+
 public class PrimaryExp {
     private int type; // 0: '('Exp')', 1: LVal, 2: Number
     private Exp exp;
@@ -26,5 +32,27 @@ public class PrimaryExp {
             numbear.print(strb);
         }
         strb.append("<PrimaryExp>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        if (type == 0) {
+            exp.symbolize(symbols, scope);
+        }
+        else if (type == 1) {
+            lVal.symbolize(false, symbols, scope);
+        }
+    }
+
+    public boolean isArray(SymbolTable symbols, Scope scope) {
+        if (type == 0) {
+            return exp.isArray(symbols, scope);
+        }
+        else if (type == 1) {
+            return lVal.isArray(symbols, scope);
+        }
+        else if (type == 2) {
+            return false;
+        }
+        return false;
     }
 }

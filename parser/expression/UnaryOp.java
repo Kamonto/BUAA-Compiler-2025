@@ -1,5 +1,10 @@
 package parser.expression;
 
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
+
+import java.util.ArrayList;
+
 public class UnaryOp {
     private int type; // 1: +, -1: -, 0: !
 
@@ -18,5 +23,9 @@ public class UnaryOp {
             strb.append("NOT !\n");
         }
         strb.append("<UnaryOp>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+
     }
 }

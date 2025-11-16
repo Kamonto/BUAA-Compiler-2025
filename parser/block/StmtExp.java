@@ -1,6 +1,8 @@
 package parser.block;
 
 import parser.expression.Exp;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
 
 public class StmtExp implements Stmt {
     private boolean hasExp;
@@ -17,5 +19,11 @@ public class StmtExp implements Stmt {
         }
         strb.append("SEMICN ;\n");
         strb.append("<Stmt>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        if (hasExp) {
+            exp.symbolize(symbols, scope);
+        }
     }
 }

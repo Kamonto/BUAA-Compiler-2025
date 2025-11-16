@@ -1,14 +1,19 @@
 package parser.block;
 
+import lexer.Token;
 import parser.expression.Exp;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
 
 import java.util.ArrayList;
 
 public class StmtPrint implements Stmt {
+    private Token printfToken;
     private String stringConst;
     private ArrayList<Exp> exps;
 
-    public StmtPrint(String stringConst, ArrayList<Exp> exps) {
+    public StmtPrint(Token printfToken, String stringConst, ArrayList<Exp> exps) {
+        this.printfToken = printfToken;
         this.stringConst = stringConst;
         this.exps = exps;
     }
@@ -24,5 +29,12 @@ public class StmtPrint implements Stmt {
         strb.append("RPARENT )\n");
         strb.append("SEMICN ;\n");
         strb.append("<Stmt>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        symbols.checkFormatCharInPrintfMismatch(stringConst, exps.size(), printfToken);
+        for (Exp exp : exps) {
+            exp.symbolize(symbols, scope);
+        }
     }
 }

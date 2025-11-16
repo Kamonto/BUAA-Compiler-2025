@@ -1,6 +1,8 @@
 package parser.declaration;
 
 import parser.type.BType;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
 
 import java.util.ArrayList;
 
@@ -26,5 +28,11 @@ public class ConstDecl implements Decl {
         }
         strb.append("SEMICN ;\n");
         strb.append("<ConstDecl>\n");
+    }
+
+    public void symbolize(SymbolTable symbols, Scope scope) {
+        for (ConstDef constDef : constDefs) {
+            constDef.symbolize(bType, symbols, scope);
+        }
     }
 }

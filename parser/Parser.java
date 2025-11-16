@@ -96,7 +96,7 @@ public class Parser {
     }
 
     private ConstDef parseConstDef() {
-        String ident;
+        Token ident;
         boolean isArray;
         ConstExp constExp;
         ConstInitVal constInitVal;
@@ -104,7 +104,7 @@ public class Parser {
             error(getTokenFromTokens(nowat - 1).getLine(), IDENFR, getTokenFromTokens(nowat).getTokenType());
             return null;
         }
-        ident = getTokenFromTokens(nowat).getContent();
+        ident = getTokenFromTokens(nowat);
         nowat++;
         if (getTokenFromTokens(nowat).getTokenType() == LBRACK) {
             nowat++;
@@ -182,7 +182,7 @@ public class Parser {
     }
 
     private VarDef parseVarDef() {
-        String ident;
+        Token ident;
         boolean isArray;
         ConstExp constExp;
         boolean hasInitValue;
@@ -191,7 +191,7 @@ public class Parser {
             error(getTokenFromTokens(nowat - 1).getLine(), IDENFR, getTokenFromTokens(nowat).getTokenType());
             return null;
         }
-        ident = getTokenFromTokens(nowat).getContent();
+        ident = getTokenFromTokens(nowat);
         nowat++;
         if (getTokenFromTokens(nowat).getTokenType() == LBRACK) {
             nowat++;
@@ -246,7 +246,7 @@ public class Parser {
 
     private FuncDef parseFuncDef() {
         FuncType funcType;
-        String ident;
+        Token ident;
         boolean hasFuncFParams;
         FuncFParams funcParams;
         Block block;
@@ -255,7 +255,7 @@ public class Parser {
             error(getTokenFromTokens(nowat - 1).getLine(), IDENFR, getTokenFromTokens(nowat).getTokenType());
             return null;
         }
-        ident = getTokenFromTokens(nowat).getContent();
+        ident = getTokenFromTokens(nowat);
         nowat++;
         if (getTokenFromTokens(nowat).getTokenType() != LPARENT) {
             error(getTokenFromTokens(nowat - 1).getLine(), LPARENT, getTokenFromTokens(nowat).getTokenType());
@@ -293,14 +293,14 @@ public class Parser {
 
     private FuncFParam parseFuncFParam() {
         BType bType;
-        String ident;
+        Token ident;
         boolean isArray;
         bType = parseBType();
         if (getTokenFromTokens(nowat).getTokenType() != IDENFR) {
             error(getTokenFromTokens(nowat - 1).getLine(), IDENFR, getTokenFromTokens(nowat).getTokenType());
             return null;
         }
-        ident = getTokenFromTokens(nowat).getContent();
+        ident = getTokenFromTokens(nowat);
         nowat++;
         if (getTokenFromTokens(nowat).getTokenType() == LBRACK) {
             isArray = true;
@@ -348,6 +348,7 @@ public class Parser {
     }
 
     private Block parseBlock() {
+        Token rBraceToken;
         ArrayList<BlockItem> blockItems = new ArrayList<BlockItem>();
         if (getTokenFromTokens(nowat).getTokenType() != LBRACE) {
             error(getTokenFromTokens(nowat - 1).getLine(), LBRACE, getTokenFromTokens(nowat).getTokenType());
@@ -357,8 +358,9 @@ public class Parser {
         while (getTokenFromTokens(nowat).getTokenType() != RBRACE) {
             blockItems.add(parseBlockItem());
         }
+        rBraceToken = getTokenFromTokens(nowat);
         nowat++;
-        return new Block(blockItems);
+        return new Block(rBraceToken, blockItems);
     }
 
     private BlockItem parseBlockItem() {
@@ -552,10 +554,12 @@ public class Parser {
     }
 
     private StmtBreak parseStmtBreak() {
+        Token breakToken;
         if (getTokenFromTokens(nowat).getTokenType() != BREAKTK) {
             error(getTokenFromTokens(nowat - 1).getLine(), BREAKTK, getTokenFromTokens(nowat).getTokenType());
             return null;
         }
+        breakToken = getTokenFromTokens(nowat);
         nowat++;
         if (getTokenFromTokens(nowat).getTokenType() != SEMICN) {
             error(getTokenFromTokens(nowat - 1).getLine(), SEMICN, getTokenFromTokens(nowat).getTokenType());
@@ -564,14 +568,16 @@ public class Parser {
         else {
             nowat++;
         }
-        return new StmtBreak();
+        return new StmtBreak(breakToken);
     }
 
     private StmtContinue parseStmtContinue() {
+        Token continueToken;
         if (getTokenFromTokens(nowat).getTokenType() != CONTINUETK) {
             error(getTokenFromTokens(nowat - 1).getLine(), CONTINUETK, getTokenFromTokens(nowat).getTokenType());
             return null;
         }
+        continueToken = getTokenFromTokens(nowat);
         nowat++;
         if (getTokenFromTokens(nowat).getTokenType() != SEMICN) {
             error(getTokenFromTokens(nowat - 1).getLine(), SEMICN, getTokenFromTokens(nowat).getTokenType());
@@ -580,16 +586,18 @@ public class Parser {
         else {
             nowat++;
         }
-        return new StmtContinue();
+        return new StmtContinue(continueToken);
     }
 
     private StmtReturn parseStmtReturn() {
+        Token returnToken;
         boolean hasReturnValue;
         Exp exp;
         if (getTokenFromTokens(nowat).getTokenType() != RETURNTK) {
             error(getTokenFromTokens(nowat - 1).getLine(), RETURNTK, getTokenFromTokens(nowat).getTokenType());
             return null;
         }
+        returnToken = getTokenFromTokens(nowat);
         nowat++;
         if (getTokenFromTokens(nowat).getTokenType() == SEMICN) {
             hasReturnValue = false;
@@ -607,16 +615,18 @@ public class Parser {
                 nowat++;
             }
         }
-        return new StmtReturn(hasReturnValue, exp);
+        return new StmtReturn(returnToken, hasReturnValue, exp);
     }
 
     private StmtPrint parseStmtPrint() {
+        Token printfToken;
         String stringConst;
         ArrayList<Exp> exps = new ArrayList<Exp>();
         if (getTokenFromTokens(nowat).getTokenType() != PRINTFTK) {
             error(getTokenFromTokens(nowat - 1).getLine(), PRINTFTK, getTokenFromTokens(nowat).getTokenType());
             return null;
         }
+        printfToken = getTokenFromTokens(nowat);
         nowat++;
         if (getTokenFromTokens(nowat).getTokenType() != LPARENT) {
             error(getTokenFromTokens(nowat - 1).getLine(), LPARENT, getTokenFromTokens(nowat).getTokenType());
@@ -647,7 +657,7 @@ public class Parser {
         else {
             nowat++;
         }
-        return new StmtPrint(stringConst, exps);
+        return new StmtPrint(printfToken, stringConst, exps);
     }
 
     private Cond parseCond() {
@@ -808,7 +818,7 @@ public class Parser {
         ArrayList<UnaryOp> unaryOps = new ArrayList<UnaryOp>();
         boolean isPrimaryExp;
         PrimaryExp primaryExp;
-        String ident;
+        Token ident;
         boolean hasFuncRParams;
         FuncRParams funcRParams;
         TokenType token0 = getTokenFromTokens(nowat).getTokenType();
@@ -820,7 +830,7 @@ public class Parser {
         if (token0 == IDENFR && token1 == LPARENT) {
             isPrimaryExp = false;
             primaryExp = null;
-            ident = getTokenFromTokens(nowat).getContent();
+            ident = getTokenFromTokens(nowat);
             nowat++;
             if (getTokenFromTokens(nowat).getTokenType() != LPARENT) {
                 error(getTokenFromTokens(nowat - 1).getLine(), LPARENT, getTokenFromTokens(nowat).getTokenType());
@@ -918,14 +928,14 @@ public class Parser {
     }
 
     private LVal parseLVal() {
-        String ident;
+        Token ident;
         boolean isArray;
         Exp exp;
         if (getTokenFromTokens(nowat).getTokenType() != IDENFR) {
             error(getTokenFromTokens(nowat - 1).getLine(), IDENFR, getTokenFromTokens(nowat).getTokenType());
             return null;
         }
-        ident = getTokenFromTokens(nowat).getContent();
+        ident = getTokenFromTokens(nowat);
         nowat++;
         if (getTokenFromTokens(nowat).getTokenType() == LBRACK) {
             nowat++;

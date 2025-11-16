@@ -1,5 +1,9 @@
 package parser.function;
 
+import symbolizer.FuncSymbol;
+import symbolizer.Scope;
+import symbolizer.SymbolTable;
+
 import java.util.ArrayList;
 
 public class FuncFParams {
@@ -19,5 +23,13 @@ public class FuncFParams {
             }
         }
         strb.append("<FuncFParams>\n");
+    }
+
+    public void symbolize(FuncSymbol funcSymbol, SymbolTable symbols, Scope scope) {
+        scope.push();
+        for (FuncFParam funcFParam : funcFParams) {
+            funcFParam.symbolize(funcSymbol, symbols, scope);
+        }
+        scope.forcePop();
     }
 }
