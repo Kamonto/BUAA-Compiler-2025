@@ -1,5 +1,6 @@
 package parser.expression;
 
+import llvmgenerator.LLVMTable;
 import symbolizer.FuncSymbol;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
@@ -54,5 +55,33 @@ public class PrimaryExp {
             return false;
         }
         return false;
+    }
+
+    public int calculate(SymbolTable symbols, Scope scope) {
+        int value = 0;
+        if (type == 0) {
+            value = exp.calculate(symbols, scope);
+        }
+        else if (type == 1) {
+            value = lVal.calculate(symbols, scope);
+        }
+        else if (type == 2) {
+            value = numbear.getValue();
+        }
+        return value;
+    }
+
+    public String llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        if (type == 0) {
+            return exp.llvmGenerate(symbols, scope, llvms);
+        }
+        else if (type == 1) {
+            return lVal.llvmGenerate(true, symbols, scope, llvms);
+        }
+        else if (type == 2) {
+            int value = numbear.getValue();
+            return Integer.toString(value);
+        }
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package parser.expression;
 
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.LLVMLabel;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
 
@@ -28,6 +30,22 @@ public class LOrExp {
     public void symbolize(SymbolTable symbols, Scope scope) {
         for (LAndExp lAndExp : lAndExps) {
             lAndExp.symbolize(symbols, scope);
+        }
+    }
+
+    public void llvmGenerate(LLVMLabel trueLabel, LLVMLabel falseLabel, SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        ArrayList<LLVMLabel> falseLabels = new ArrayList<LLVMLabel>();
+        int size = lAndExps.size();
+        for (int i = 0; i < size - 1; i++) {
+            falseLabels.add(new LLVMLabel());
+        }
+        falseLabels.add(falseLabel);
+        for (int i = 0; i < size; i++) {
+            lAndExps.get(i).llvmGenerate(trueLabel, falseLabels.get(i), symbols, scope, llvms);
+            if (i < size - 1) {
+                falseLabels.get(i).setNumber(scope.allocNumber());
+                llvms.addLLVM(falseLabels.get(i));
+            }
         }
     }
 }

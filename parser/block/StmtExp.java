@@ -1,5 +1,6 @@
 package parser.block;
 
+import llvmgenerator.LLVMTable;
 import parser.expression.Exp;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
@@ -24,6 +25,12 @@ public class StmtExp implements Stmt {
     public void symbolize(SymbolTable symbols, Scope scope) {
         if (hasExp) {
             exp.symbolize(symbols, scope);
+        }
+    }
+
+    public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        if (hasExp) {
+            exp.llvmGenerate(symbols, scope ,llvms);
         }
     }
 }

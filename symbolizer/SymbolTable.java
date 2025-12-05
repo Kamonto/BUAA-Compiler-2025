@@ -15,12 +15,16 @@ public class SymbolTable {
     private Scope scope;
     private HashMap<Integer, ArrayList<Symbol>> symbols;
     private HashMap<Integer, ArrayList<FuncSymbol>> funcSymbols;
+    private HashMap<Integer, ArrayList<ArrSymbol>> arrSymbols;
+    private HashMap<Integer, ArrayList<ConstSymbol>> constSymbols;
     private ErrorList errorList;
 
     public SymbolTable(Scope scope, ErrorList errorList) {
         this.scope = scope;
         symbols = new HashMap<>();
         funcSymbols = new HashMap<>();
+        arrSymbols = new HashMap<>();
+        constSymbols = new HashMap<>();
         this.errorList = errorList;
     }
 
@@ -38,6 +42,118 @@ public class SymbolTable {
             funcSymbols.put(scope, new ArrayList<FuncSymbol>());
         }
         funcSymbols.get(scope).add(funcSymbol);
+    }
+
+    public void addArrSymbol(ArrSymbol arrSymbol) {
+        int scope = arrSymbol.getScope();
+        if (!arrSymbols.containsKey(scope)) {
+            arrSymbols.put(scope, new ArrayList<ArrSymbol>());
+        }
+        arrSymbols.get(scope).add(arrSymbol);
+    }
+
+    public void addConstSymbol(ConstSymbol constSymbol) {
+        int scope = constSymbol.getScope();
+        if (!constSymbols.containsKey(scope)) {
+            constSymbols.put(scope, new ArrayList<ConstSymbol>());
+        }
+        constSymbols.get(scope).add(constSymbol);
+    }
+
+    public Symbol getSymbol(int scope, String name) {
+        if (!symbols.containsKey(scope)) {
+            return null;
+        }
+        for (Symbol symbol : symbols.get(scope)) {
+            if (symbol.getName().equals(name)) {
+                return symbol;
+            }
+        }
+        return null;
+    }
+
+    public Symbol findSymbol(int scope, String name) {
+        if (!symbols.containsKey(scope)) {
+            return null;
+        }
+        for (Symbol symbol : symbols.get(scope)) {
+            if (symbol.getName().equals(name) && symbol.getLabel() != null) {
+                return symbol;
+            }
+        }
+        return null;
+    }
+
+    public FuncSymbol getFuncSymbol(int scope, String name) {
+        if (!funcSymbols.containsKey(scope)) {
+            return null;
+        }
+        for (FuncSymbol funcSymbol : funcSymbols.get(scope)) {
+            if (funcSymbol.getName().equals(name)) {
+                return funcSymbol;
+            }
+        }
+        return null;
+    }
+
+    public FuncSymbol findFuncSymbol(int scope, String name) {
+        if (!funcSymbols.containsKey(scope)) {
+            return null;
+        }
+        for (FuncSymbol funcSymbol : funcSymbols.get(scope)) {
+            if (funcSymbol.getName().equals(name) && funcSymbol.getLabel() != null) {
+                return funcSymbol;
+            }
+        }
+        return null;
+    }
+
+    public ArrSymbol getArrSymbol(int scope, String name) {
+        if (!arrSymbols.containsKey(scope)) {
+            return null;
+        }
+        for (ArrSymbol arrSymbol : arrSymbols.get(scope)) {
+            if (arrSymbol.getName().equals(name)) {
+                return arrSymbol;
+            }
+        }
+        return null;
+    }
+
+    public ArrSymbol findArrSymbol(int scope, String name) {
+        if (!arrSymbols.containsKey(scope)) {
+            return null;
+        }
+        for (ArrSymbol arrSymbol : arrSymbols.get(scope)) {
+            if (arrSymbol.getName().equals(name) && arrSymbol.getLabel() != null) {
+                return arrSymbol;
+            }
+        }
+        return null;
+    }
+
+    public ConstSymbol getConstSymbol(int scope, String name) {
+        if (!constSymbols.containsKey(scope)) {
+            return null;
+        }
+        for (ConstSymbol constSymbol : constSymbols.get(scope)) {
+            if (constSymbol.getName().equals(name)) {
+                return constSymbol;
+            }
+        }
+        return null;
+    }
+
+    public ConstSymbol findConstSymbol(int scope, String name) {
+        if (!constSymbols.containsKey(scope)) {
+            return null;
+        }
+        for (ConstSymbol constSymbol : constSymbols.get(scope)) {
+            if (constSymbol.getName().equals(name) && constSymbol.getLabel() != null) {
+                return constSymbol;
+            }
+        }
+        return null;
     }
 
     public void checkDuplicateDeclaration(Token ident) {

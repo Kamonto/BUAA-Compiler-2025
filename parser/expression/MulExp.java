@@ -1,5 +1,7 @@
 package parser.expression;
 
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.*;
 import symbolizer.FuncSymbol;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
@@ -46,5 +48,58 @@ public class MulExp {
             }
         }
         return false;
+    }
+
+    public int calculate(SymbolTable symbols, Scope scope) {
+        int value = 0;
+        int size = unaryExps.size();
+        for (int i = 0; i < size; i++) {
+            int opType = opTypes.get(i);
+            if (opType == 0) {
+                value = unaryExps.get(i).calculate(symbols, scope);
+            }
+            else if (opType == 1) {
+                value *= unaryExps.get(i).calculate(symbols, scope);
+            }
+            else if (opType == 2) {
+                value /= unaryExps.get(i).calculate(symbols, scope);
+            }
+            else if (opType == 3) {
+                value %= unaryExps.get(i).calculate(symbols, scope);
+            }
+        }
+        return value;
+    }
+
+    public String llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        String reslabel = null;
+        int size = unaryExps.size();
+        for (int i = 0; i < size; i++) {
+            if (opTypes.get(i) == 0) {
+                reslabel = unaryExps.get(i).llvmGenerate(symbols, scope, llvms);
+            }
+            else if (opTypes.get(i) == 1) {
+                String label1 = reslabel;
+                String label2 = unaryExps.get(i).llvmGenerate(symbols, scope, llvms);
+                reslabel = "%" + scope.allocNumber();
+                LLVMMul llvmMul = new LLVMMul(reslabel, label1, label2);
+                llvms.addLLVM(llvmMul);
+            }
+            else if (opTypes.get(i) == 2) {
+                String label1 = reslabel;
+                String label2 = unaryExps.get(i).llvmGenerate(symbols, scope, llvms);
+                reslabel = "%" + scope.allocNumber();
+                LLVMSdiv llvmSdiv = new LLVMSdiv(reslabel, label1, label2);
+                llvms.addLLVM(llvmSdiv);
+            }
+            else if (opTypes.get(i) == 3) {
+                String label1 = reslabel;
+                String label2 = unaryExps.get(i).llvmGenerate(symbols, scope, llvms);
+                reslabel = "%" + scope.allocNumber();
+                LLVMSrem llvmSrem = new LLVMSrem(reslabel, label1, label2);
+                llvms.addLLVM(llvmSrem);
+            }
+        }
+        return reslabel;
     }
 }

@@ -1,5 +1,6 @@
 package parser.function;
 
+import llvmgenerator.LLVMTable;
 import symbolizer.FuncSymbol;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
@@ -26,10 +27,14 @@ public class FuncFParams {
     }
 
     public void symbolize(FuncSymbol funcSymbol, SymbolTable symbols, Scope scope) {
-        scope.push();
         for (FuncFParam funcFParam : funcFParams) {
             funcFParam.symbolize(funcSymbol, symbols, scope);
         }
-        scope.forcePop();
+    }
+
+    public void llvmGenerate(ArrayList<String> paramNames, SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        for (FuncFParam funcFParam : funcFParams) {
+            funcFParam.llvmGenerate(paramNames, symbols, scope, llvms);
+        }
     }
 }

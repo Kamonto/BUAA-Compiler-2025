@@ -1,5 +1,6 @@
 package parser.expression;
 
+import llvmgenerator.LLVMTable;
 import symbolizer.FuncSymbol;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
@@ -24,5 +25,13 @@ public class Exp {
 
     public boolean isArray(SymbolTable symbols, Scope scope) {
         return addExp.isArray(symbols, scope);
+    }
+
+    public int calculate(SymbolTable symbols, Scope scope) {
+        return addExp.calculate(symbols, scope);
+    }
+
+    public String llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        return addExp.llvmGenerate(symbols, scope, llvms);
     }
 }

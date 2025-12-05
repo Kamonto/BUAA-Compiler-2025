@@ -8,6 +8,7 @@ public class FuncSymbol {
     private String name;
     private boolean hasReturnValue;
     private ArrayList<Boolean> params; // true: isArray, false: isNotArray
+    private String label;
 
     public FuncSymbol(Scope scope, String name, boolean hasReturnValue) {
         this.scope = scope.getScope();
@@ -15,6 +16,7 @@ public class FuncSymbol {
         this.name = name;
         this.hasReturnValue = hasReturnValue;
         params = new ArrayList<Boolean>();
+        label = null;
     }
 
     public int getScope() {
@@ -35,5 +37,13 @@ public class FuncSymbol {
 
     public ArrayList<Boolean> getParams() {
         return params;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }

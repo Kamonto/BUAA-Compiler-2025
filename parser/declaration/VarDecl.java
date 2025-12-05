@@ -1,5 +1,6 @@
 package parser.declaration;
 
+import llvmgenerator.LLVMTable;
 import parser.type.BType;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
@@ -37,6 +38,12 @@ public class VarDecl implements Decl {
     public void symbolize(SymbolTable symbols, Scope scope) {
         for (VarDef varDef : varDefs) {
             varDef.symbolize(isStatic, bType, symbols, scope);
+        }
+    }
+
+    public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        for (VarDef varDef : varDefs) {
+            varDef.llvmGenerate(isStatic, bType, symbols, scope, llvms);
         }
     }
 }

@@ -1,8 +1,11 @@
 package parser.function;
 
 import lexer.Token;
+import llvmgenerator.LLVMTable;
 import parser.type.BType;
 import symbolizer.*;
+
+import java.util.ArrayList;
 
 public class FuncFParam {
     private BType bType;
@@ -37,5 +40,11 @@ public class FuncFParam {
             funcSymbol.addParam(false);
         }
         symbols.addSymbol(symbol);
+    }
+
+    public void llvmGenerate(ArrayList<String> paramNames, SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        paramNames.add(ident.getContent());
+        ArrSymbol arrSymbol = new ArrSymbol(scope, ident.getContent(), -1);
+        symbols.addArrSymbol(arrSymbol);
     }
 }

@@ -1,5 +1,7 @@
 package parser;
 
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.LLVMImport;
 import parser.block.MainFuncDef;
 import parser.declaration.Decl;
 import parser.function.FuncDef;
@@ -38,5 +40,17 @@ public class CompUnit {
             funcDef.symbolize(symbols, scope);
         }
         mainFuncDef.symbolize(symbols, scope);
+    }
+
+    public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        LLVMImport llvmImport = new LLVMImport();
+        llvms.addLLVM(llvmImport);
+        for (Decl decl : decls) {
+            decl.llvmGenerate(symbols, scope, llvms);
+        }
+        for (FuncDef funcDef : funcDefs) {
+            funcDef.llvmGenerate(symbols, scope, llvms);
+        }
+        mainFuncDef.llvmGenerate(symbols, scope, llvms);
     }
 }

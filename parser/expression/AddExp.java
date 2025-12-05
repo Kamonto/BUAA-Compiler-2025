@@ -1,5 +1,8 @@
 package parser.expression;
 
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.LLVMAdd;
+import llvmgenerator.instruction.LLVMSub;
 import symbolizer.FuncSymbol;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
@@ -21,7 +24,8 @@ public class AddExp {
             int opType = opTypes.get(i);
             if (opType == 1) {
                 strb.append("PLUS +\n");
-            } else if (opType == 2) {
+            }
+            else if (opType == 2) {
                 strb.append("MINU -\n");
             }
             mulExps.get(i).print(strb);
@@ -42,5 +46,48 @@ public class AddExp {
             }
         }
         return false;
+    }
+
+    public int calculate(SymbolTable symbols, Scope scope) {
+        int value = 0;
+        int size = mulExps.size();
+        for (int i = 0; i < size; i++) {
+            int opType = opTypes.get(i);
+            if (opType == 0) {
+                value = mulExps.get(i).calculate(symbols, scope);
+            }
+            else if (opType == 1) {
+                value += mulExps.get(i).calculate(symbols, scope);
+            }
+            else if (opType == 2) {
+                value -= mulExps.get(i).calculate(symbols, scope);
+            }
+        }
+        return value;
+    }
+
+    public String llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        String reslabel = null;
+        int size = mulExps.size();
+        for (int i = 0; i < size; i++) {
+            if (opTypes.get(i) == 0) {
+                reslabel = mulExps.get(i).llvmGenerate(symbols, scope, llvms);
+            }
+            else if (opTypes.get(i) == 1) {
+                String label1 = reslabel;
+                String label2 = mulExps.get(i).llvmGenerate(symbols, scope, llvms);
+                reslabel = "%" + scope.allocNumber();
+                LLVMAdd llvmAdd = new LLVMAdd(reslabel, label1, label2);
+                llvms.addLLVM(llvmAdd);
+            }
+            else if (opTypes.get(i) == 2) {
+                String label1 = reslabel;
+                String label2 = mulExps.get(i).llvmGenerate(symbols, scope, llvms);
+                reslabel = "%" + scope.allocNumber();
+                LLVMSub llvmSub = new LLVMSub(reslabel, label1, label2);
+                llvms.addLLVM(llvmSub);
+            }
+        }
+        return reslabel;
     }
 }

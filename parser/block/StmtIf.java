@@ -1,5 +1,8 @@
 package parser.block;
 
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.LLVMJump;
+import llvmgenerator.instruction.LLVMLabel;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
 
@@ -34,5 +37,34 @@ public class StmtIf implements Stmt {
         if (hasElse) {
             anostmt.symbolize(symbols, scope);
         }
+    }
+
+    public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        LLVMLabel trueLabel = new LLVMLabel();
+        LLVMLabel endLabel = new LLVMLabel();
+        if (hasElse) {
+            LLVMLabel falseLabel = new LLVMLabel();
+            cond.llvmGenerate(trueLabel, falseLabel, symbols, scope, llvms);
+            trueLabel.setNumber(scope.allocNumber());
+            llvms.addLLVM(trueLabel);
+            stmt.llvmGenerate(symbols, scope, llvms);
+            LLVMJump llvmJump = new LLVMJump(endLabel);
+            llvms.addLLVM(llvmJump);
+            falseLabel.setNumber(scope.allocNumber());
+            llvms.addLLVM(falseLabel);
+            anostmt.llvmGenerate(symbols, scope, llvms);
+            LLVMJump anollvmJump = new LLVMJump(endLabel);
+            llvms.addLLVM(anollvmJump);
+        }
+        else {
+            cond.llvmGenerate(trueLabel, endLabel, symbols, scope, llvms);
+            trueLabel.setNumber(scope.allocNumber());
+            llvms.addLLVM(trueLabel);
+            stmt.llvmGenerate(symbols, scope, llvms);
+            LLVMJump llvmJump = new LLVMJump(endLabel);
+            llvms.addLLVM(llvmJump);
+        }
+        endLabel.setNumber(scope.allocNumber());
+        llvms.addLLVM(endLabel);
     }
 }

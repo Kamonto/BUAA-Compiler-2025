@@ -12,6 +12,10 @@ public class Numbear {
         this.intConst = intConst;
     }
 
+    public int getValue() {
+        return Integer.parseInt(intConst);
+    }
+
     public void print(StringBuilder strb) {
         strb.append("INTCON ").append(intConst).append("\n");
         strb.append("<Number>\n");

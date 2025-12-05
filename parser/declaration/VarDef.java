@@ -1,12 +1,13 @@
 package parser.declaration;
 
 import lexer.Token;
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.*;
 import parser.expression.ConstExp;
 import parser.type.BType;
-import symbolizer.Scope;
-import symbolizer.Symbol;
-import symbolizer.SymbolTable;
-import symbolizer.SymbolType;
+import symbolizer.*;
+
+import java.util.ArrayList;
 
 public class VarDef {
     private Token ident;
@@ -57,5 +58,119 @@ public class VarDef {
             }
         }
         symbols.addSymbol(symbol);
+    }
+
+    public void llvmGenerate(boolean isStatic, BType bType, SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        if (isStatic) {
+            Symbol symbol = symbols.getSymbol(scope.getScope(), ident.getContent());
+            if (symbol.getLabel() == null) {
+                String label = "@" + ident.getContent() + ".static" + llvms.llvmDefStaticsSize();
+                symbol.setLabel(label);
+                if (isArray) {
+                    int size = constExp.calculate(symbols, scope);
+                    ArrSymbol arrSymbol = new ArrSymbol(scope, ident.getContent(), size);
+                    arrSymbol.setLabel(label);
+                    symbols.addArrSymbol(arrSymbol);
+                    ArrayList<Integer> values;
+                    if (hasInitValue) {
+                        values = initVal.calculate(symbols, scope, size);
+                    }
+                    else {
+                        values = new ArrayList<Integer>();
+                        for (int i = 0; i < size; i++) {
+                            values.add(0);
+                        }
+                    }
+                    LLVMDefGlobalArr llvmDefGlobalArr = new LLVMDefGlobalArr(label, size, values);
+                    llvms.addLLVMDefStatics(llvmDefGlobalArr);
+                }
+                else {
+                    int value;
+                    if (hasInitValue) {
+                        value = initVal.calculate(symbols, scope, 1).get(0);
+                    }
+                    else {
+                        value = 0;
+                    }
+                    LLVMDefGlobalVar llvmDefGlobalVar = new LLVMDefGlobalVar(label, value);
+                    llvms.addLLVMDefStatics(llvmDefGlobalVar);
+                }
+            }
+        }
+        else if (scope.getLayer() == 1) {
+            String label = "@" + ident.getContent();
+            Symbol symbol = symbols.getSymbol(scope.getScope(), ident.getContent());
+            symbol.setLabel(label);
+            if (isArray) {
+                int size = constExp.calculate(symbols, scope);
+                ArrSymbol arrSymbol = new ArrSymbol(scope, ident.getContent(), size);
+                arrSymbol.setLabel(label);
+                symbols.addArrSymbol(arrSymbol);
+                ArrayList<Integer> values;
+                if (hasInitValue) {
+                    values = initVal.calculate(symbols, scope, size);
+                }
+                else {
+                    values = new ArrayList<Integer>();
+                    for (int i = 0; i < size; i++) {
+                        values.add(0);
+                    }
+                }
+                LLVMDefGlobalArr llvmDefGlobalArr = new LLVMDefGlobalArr(label, size, values);
+                llvms.addLLVM(llvmDefGlobalArr);
+            }
+            else {
+                int value;
+                if (hasInitValue) {
+                    value = initVal.calculate(symbols, scope, 1).get(0);
+                }
+                else {
+                    value = 0;
+                }
+                LLVMDefGlobalVar llvmDefGlobalVar = new LLVMDefGlobalVar(label, value);
+                llvms.addLLVM(llvmDefGlobalVar);
+            }
+        }
+        else {
+            String label = "%" + scope.allocNumber();
+            Symbol symbol = symbols.getSymbol(scope.getScope(), ident.getContent());
+            symbol.setLabel(label);
+            if (isArray) {
+                int size = constExp.calculate(symbols, scope);
+                ArrSymbol arrSymbol = new ArrSymbol(scope, ident.getContent(), size);
+                arrSymbol.setLabel(label);
+                symbols.addArrSymbol(arrSymbol);
+                LLVMAllocArr llvmAllocArr = new LLVMAllocArr(label, size);
+                llvms.addLLVM(llvmAllocArr);
+                if (hasInitValue) {
+                    ArrayList<String> initlabels = initVal.llvmGenerate(symbols, scope, llvms);
+                    int initsize = initlabels.size();
+                    String templabel = null;
+                    for (int i = 0; i < initsize; i++) {
+                        String reslabel = "%" + scope.allocNumber();
+                        if (i == 0) {
+                            LLVMGetElementArr llvmGetElementArr = new LLVMGetElementArr(reslabel, size, label, "0");
+                            llvms.addLLVM(llvmGetElementArr);
+                        }
+                        else {
+                            LLVMGetElementPtr llvmGetElementPtr = new LLVMGetElementPtr(reslabel, templabel, "1");
+                            llvms.addLLVM(llvmGetElementPtr);
+                        }
+                        templabel = reslabel;
+                        LLVMStore llvmStore = new LLVMStore(initlabels.get(i), reslabel, false);
+                        llvms.addLLVM(llvmStore);
+                    }
+                }
+            }
+            else {
+                LLVMAllocVar llvmAllocVar = new LLVMAllocVar(label, false);
+                llvms.addLLVM(llvmAllocVar);
+                if (hasInitValue) {
+                    String initlabel = initVal.llvmGenerate(symbols, scope, llvms).get(0);
+                    LLVMStore llvmStore = new LLVMStore(initlabel, label, false);
+                    llvms.addLLVM(llvmStore);
+                }
+            }
+        }
     }
 }

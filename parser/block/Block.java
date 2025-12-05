@@ -1,6 +1,7 @@
 package parser.block;
 
 import lexer.Token;
+import llvmgenerator.LLVMTable;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
 
@@ -31,6 +32,14 @@ public class Block {
         }
         if (nonVoidFuncBlock) {
             symbols.checkMissReturnInNonVoidFunc(blockItems, rBraceToken);
+        }
+        scope.pop();
+    }
+
+    public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        scope.push();
+        for (BlockItem blockItem : blockItems) {
+            blockItem.llvmGenerate(symbols, scope, llvms);
         }
         scope.pop();
     }

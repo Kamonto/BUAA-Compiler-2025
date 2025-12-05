@@ -1,5 +1,7 @@
 package parser.block;
 
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.LLVMStore;
 import parser.expression.Exp;
 import parser.expression.LVal;
 import symbolizer.Scope;
@@ -25,5 +27,12 @@ public class StmtAssign implements Stmt {
     public void symbolize(SymbolTable symbols, Scope scope) {
         lVal.symbolize(true, symbols, scope);
         exp.symbolize(symbols, scope);
+    }
+
+    public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        String dstlabel = lVal.llvmGenerate(false, symbols, scope, llvms);
+        String srclabel = exp.llvmGenerate(symbols, scope, llvms);
+        LLVMStore llvmStore = new LLVMStore(srclabel, dstlabel, false);
+        llvms.addLLVM(llvmStore);
     }
 }

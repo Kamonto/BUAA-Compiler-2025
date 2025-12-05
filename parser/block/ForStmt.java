@@ -1,5 +1,7 @@
 package parser.block;
 
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.LLVMStore;
 import parser.expression.Exp;
 import parser.expression.LVal;
 import symbolizer.Scope;
@@ -39,6 +41,16 @@ public class ForStmt {
         }
         for (Exp exp : exps) {
             exp.symbolize(symbols, scope);
+        }
+    }
+
+    public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        int size = lVals.size();
+        for (int i = 0; i < size; i++) {
+            String dstlabel = lVals.get(i).llvmGenerate(false, symbols, scope, llvms);
+            String srclabel = exps.get(i).llvmGenerate(symbols, scope, llvms);
+            LLVMStore llvmStore = new LLVMStore(srclabel, dstlabel, false);
+            llvms.addLLVM(llvmStore);
         }
     }
 }

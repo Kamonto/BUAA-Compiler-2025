@@ -1,5 +1,10 @@
 package parser.expression;
 
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.LLVMAdd;
+import llvmgenerator.instruction.LLVMIcmp;
+import llvmgenerator.instruction.LLVMSub;
+import llvmgenerator.instruction.LLVMZext;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
 
@@ -39,5 +44,26 @@ public class RelExp {
         for (AddExp addExp : addExps) {
             addExp.symbolize(symbols, scope);
         }
+    }
+
+    public String llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        String reslabel = null;
+        int size = addExps.size();
+        for (int i = 0; i < size; i++) {
+            if (opTypes.get(i) == 0) {
+                reslabel = addExps.get(i).llvmGenerate(symbols, scope, llvms);
+            }
+            else {
+                String label1 = reslabel;
+                String label2 = addExps.get(i).llvmGenerate(symbols, scope, llvms);
+                String templabel = "%" + scope.allocNumber();
+                LLVMIcmp llvmIcmp = new LLVMIcmp(templabel, opTypes.get(i) + 1, label1, label2);
+                llvms.addLLVM(llvmIcmp);
+                reslabel = "%" + scope.allocNumber();
+                LLVMZext llvmZext = new LLVMZext(templabel, reslabel);
+                llvms.addLLVM(llvmZext);
+            }
+        }
+        return reslabel;
     }
 }

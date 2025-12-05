@@ -1,6 +1,8 @@
 import error.ErrorList;
 import lexer.Lexer;
 import lexer.Token;
+import llvmgenerator.LLVMGenerator;
+import llvmgenerator.LLVMTable;
 import parser.CompUnit;
 import parser.Parser;
 import symbolizer.Symbolizer;
@@ -41,9 +43,14 @@ public class Compiler {
         SymbolTable symbols = symbolizer.symbolize();
         if (errorList.hasError()) {
             errorList.printError();
+            System.exit(-1);
         }
         else {
             symbolizer.printSymbols();
         }
+
+        LLVMGenerator llvmGenerator = new LLVMGenerator(compUnit, symbols);
+        LLVMTable llvms = llvmGenerator.llvmGenerate();
+        llvmGenerator.printLLVMs();
     }
 }

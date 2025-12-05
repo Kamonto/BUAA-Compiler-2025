@@ -1,5 +1,6 @@
 package parser.expression;
 
+import llvmgenerator.LLVMTable;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
 
@@ -19,5 +20,13 @@ public class ConstExp {
 
     public void symbolize(SymbolTable symbols, Scope scope) {
         addExp.symbolize(symbols, scope);
+    }
+
+    public int calculate(SymbolTable symbols, Scope scope) {
+        return addExp.calculate(symbols, scope);
+    }
+
+    public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+
     }
 }

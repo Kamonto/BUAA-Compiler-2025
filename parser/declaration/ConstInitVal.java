@@ -1,5 +1,6 @@
 package parser.declaration;
 
+import llvmgenerator.LLVMTable;
 import parser.expression.ConstExp;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
@@ -36,6 +37,26 @@ public class ConstInitVal {
     }
 
     public void symbolize(SymbolTable symbols, Scope scope) {
+
+    }
+
+    public ArrayList<Integer> calculate(SymbolTable symbols, Scope scope, int size) {
+        ArrayList<Integer> values = new ArrayList<Integer>();
+        if (isArray) {
+            for (ConstExp item : constExps) {
+                values.add(item.calculate(symbols, scope));
+            }
+            for (int i = constExps.size(); i < size; i++) {
+                values.add(0);
+            }
+        }
+        else {
+            values.add(constExp.calculate(symbols, scope));
+        }
+        return values;
+    }
+
+    public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
 
     }
 }

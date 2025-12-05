@@ -1,9 +1,9 @@
 package parser.expression;
 
 import lexer.Token;
-import symbolizer.FuncSymbol;
-import symbolizer.Scope;
-import symbolizer.SymbolTable;
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.*;
+import symbolizer.*;
 
 import java.util.ArrayList;
 
@@ -67,5 +67,101 @@ public class UnaryExp {
         else {
             return false;
         }
+    }
+
+    public int calculate(SymbolTable symbols, Scope scope) {
+        int value = 0;
+        int op = 1;
+        int cnt = 0;
+        for (UnaryOp unaryOp : unaryOps) {
+            int type = unaryOp.getType();
+            op *= type;
+            if (type == 0) {
+                cnt++;
+            }
+        }
+        if (isPrimaryExp) {
+            value = primaryExp.calculate(symbols, scope);
+        }
+        else {
+            // TODO: idk maybe illegal
+        }
+        if (op == 0) {
+            if (cnt % 2 == 1) {
+                value = (value == 0) ? 1 : 0;
+            }
+            else {
+                value = (value == 0) ? 0 : 1;
+            }
+        }
+        else {
+            value *= op;
+        }
+        return value;
+    }
+
+    public String llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        int op = 1;
+        int cnt = 0;
+        for (UnaryOp unaryOp : unaryOps) {
+            int type = unaryOp.getType();
+            op *= type;
+            if (type == 0) {
+                cnt++;
+            }
+        }
+        String reslabel;
+        if (isPrimaryExp) {
+            reslabel = primaryExp.llvmGenerate(symbols, scope, llvms);
+        }
+        else {
+            if (ident.getContent().equals("getint")) {
+                reslabel = "%" + scope.allocNumber();
+                LLVMGetInt llvmGetInt = new LLVMGetInt(reslabel);
+                llvms.addLLVM(llvmGetInt);
+            }
+            else {
+                Symbol symbol = symbols.findSymbol(1, ident.getContent());
+                String label = symbol.getLabel();
+                FuncSymbol funcSymbol = symbols.findFuncSymbol(1, ident.getContent());
+                boolean hasReturnValue = funcSymbol.hasReturnValue();
+                ArrayList<String> paramLabels = new ArrayList<String>();
+                ArrayList<Boolean> isPointers = funcSymbol.getParams();
+                if (hasFuncRParams) {
+                    funcRParams.llvmGenerate(paramLabels, symbols, scope, llvms);
+                }
+                if (hasReturnValue) {
+                    reslabel = "%" + scope.allocNumber();
+                }
+                else {
+                    reslabel = null;
+                }
+                LLVMCall llvmCall = new LLVMCall(reslabel, label, hasReturnValue, paramLabels, isPointers);
+                llvms.addLLVM(llvmCall);
+            }
+        }
+        if (reslabel != null && op == -1) {
+            String oldlabel = reslabel;
+            reslabel = "%" + scope.allocNumber();
+            LLVMSub llvmSub = new LLVMSub(reslabel, "0", oldlabel);
+            llvms.addLLVM(llvmSub);
+        }
+        if (reslabel != null && op == 0) {
+            String oldlabel = reslabel;
+            reslabel = "%" + scope.allocNumber();
+            if (cnt % 2 == 1) {
+                LLVMIcmp llvmIcmp = new LLVMIcmp(reslabel, 0, oldlabel, "0");
+                llvms.addLLVM(llvmIcmp);
+            }
+            else {
+                LLVMIcmp llvmIcmp = new LLVMIcmp(reslabel, 1, oldlabel, "0");
+                llvms.addLLVM(llvmIcmp);
+            }
+            oldlabel = reslabel;
+            reslabel = "%" + scope.allocNumber();
+            LLVMZext llvmZext = new LLVMZext(oldlabel, reslabel);
+            llvms.addLLVM(llvmZext);
+        }
+        return reslabel;
     }
 }

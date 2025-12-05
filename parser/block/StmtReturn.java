@@ -1,6 +1,9 @@
 package parser.block;
 
 import lexer.Token;
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.LLVMLabel;
+import llvmgenerator.instruction.LLVMRet;
 import parser.expression.Exp;
 import symbolizer.Scope;
 import symbolizer.SymbolTable;
@@ -30,5 +33,19 @@ public class StmtReturn implements Stmt {
         if (hasReturnValue) {
             exp.symbolize(symbols, scope);
         }
+    }
+
+    public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
+        if (hasReturnValue) {
+            LLVMRet llvmRet = new LLVMRet(true, exp.llvmGenerate(symbols, scope, llvms));
+            llvms.addLLVM(llvmRet);
+        }
+        else {
+            LLVMRet llvmRet = new LLVMRet(false, null);
+            llvms.addLLVM(llvmRet);
+        }
+        LLVMLabel llvmLabel = new LLVMLabel();
+        llvmLabel.setNumber(scope.allocNumber());
+        llvms.addLLVM(llvmLabel);
     }
 }

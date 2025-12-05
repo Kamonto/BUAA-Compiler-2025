@@ -12,6 +12,10 @@ public class UnaryOp {
         this.type = type;
     }
 
+    public int getType() {
+        return type;
+    }
+
     public void print(StringBuilder strb) {
         if (type == 1) {
             strb.append("PLUS +\n");
