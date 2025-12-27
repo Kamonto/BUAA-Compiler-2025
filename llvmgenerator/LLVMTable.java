@@ -1,6 +1,7 @@
 package llvmgenerator;
 
 import llvmgenerator.instruction.*;
+import mipsgenerator.MIPSTable;
 
 import java.util.ArrayList;
 
@@ -8,11 +9,13 @@ public class LLVMTable {
     private ArrayList<LLVM> llvms;
     private ArrayList<LLVM> llvmDefStrs;
     private ArrayList<LLVM> llvmDefStatics;
+    private ArrayList<LLVM> mergedllvms;
 
     public LLVMTable() {
         llvms = new ArrayList<LLVM>();
         llvmDefStrs = new ArrayList<LLVM>();
         llvmDefStatics = new ArrayList<LLVM>();
+        mergedllvms = new ArrayList<LLVM>();
     }
 
     public void addLLVM(LLVM llvm) {
@@ -35,29 +38,37 @@ public class LLVMTable {
         return llvmDefStrs.size();
     }
 
-    public void checkLastLabel() {
-        int size = llvms.size();
-        if (llvms.get(size - 1) instanceof LLVMDefFuncEnd && llvms.get(size - 2) instanceof LLVMLabel) {
-            llvms.remove(size - 2);
+    public void checkLastLabel(boolean hasReturnValue) {
+        if (hasReturnValue) {
+            int size = llvms.size();
+            if (llvms.get(size - 1) instanceof LLVMDefFuncEnd && llvms.get(size - 2) instanceof LLVMLabel) {
+                llvms.remove(size - 2);
+            }
         }
-        size = llvms.size();
-        if (llvms.get(size - 1) instanceof LLVMDefFuncEnd && !(llvms.get(size - 2) instanceof LLVMRet)) {
-            LLVMRet llvmRet = new LLVMRet(false, null);
-            llvms.add(size - 1, llvmRet);
+        else {
+            int size = llvms.size();
+            if (llvms.get(size - 1) instanceof LLVMDefFuncEnd && !(llvms.get(size - 2) instanceof LLVMRet)) {
+                LLVMRet llvmRet = new LLVMRet(false, null);
+                llvms.add(size - 1, llvmRet);
+            }
         }
     }
 
     public StringBuilder print() {
         StringBuilder strb = new StringBuilder();
-        ArrayList<LLVM> mergedllvms = mergeLLVM();
         for (LLVM llvm : mergedllvms) {
             llvm.print(strb);
         }
         return strb;
     }
 
-    private ArrayList<LLVM> mergeLLVM() {
-        ArrayList<LLVM> mergedllvms = new ArrayList<LLVM>();
+    public void mipsGenerate(MIPSTable mipses) {
+        for (LLVM llvm : mergedllvms) {
+            llvm.mipsGenerate(mipses);
+        }
+    }
+
+    public void mergeLLVM() {
         boolean flag = false;
         for (LLVM llvm : llvms) {
             if (flag == false && !(llvm instanceof LLVMImport || llvm instanceof LLVMDefGlobalVar || llvm instanceof LLVMDefGlobalArr)) {
@@ -71,6 +82,5 @@ public class LLVMTable {
             }
             mergedllvms.add(llvm);
         }
-        return mergedllvms;
     }
 }

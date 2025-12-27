@@ -1,6 +1,9 @@
 package llvmgenerator.instruction;
 
 import llvmgenerator.LLVM;
+import mipsgenerator.MIPSTable;
+import mipsgenerator.Register;
+import mipsgenerator.instruction.MIPSSet;
 
 public class LLVMIcmp implements LLVM {
     private String reslabel;
@@ -42,5 +45,16 @@ public class LLVMIcmp implements LLVM {
         strb.append(", ");
         strb.append(label2);
         strb.append("\n");
+    }
+
+    public void mipsGenerate(MIPSTable mipses) {
+        Register reg1 = mipses.allocRegister(label1);
+        mipses.loadLabel(label1, reg1, this);
+        Register reg2 = mipses.allocRegister(label2);
+        mipses.loadLabel(label2, reg2, this);
+        Register resreg = mipses.allocRegister(reslabel);
+        MIPSSet mipsSet = new MIPSSet(resreg, op, reg1, reg2, this);
+        mipses.addMIPSTextSegment(mipsSet);
+        mipses.storeLabel(reslabel, resreg, this);
     }
 }

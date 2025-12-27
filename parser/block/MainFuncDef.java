@@ -44,6 +44,6 @@ public class MainFuncDef {
         block.llvmGenerate(symbols, scope, llvms);
         LLVMDefFuncEnd llvmDefFuncEnd = new LLVMDefFuncEnd();
         llvms.addLLVM(llvmDefFuncEnd);
-        llvms.checkLastLabel();
+        llvms.checkLastLabel(true);
     }
 }

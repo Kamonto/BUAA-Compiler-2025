@@ -1,6 +1,8 @@
 package llvmgenerator.instruction;
 
 import llvmgenerator.LLVM;
+import mipsgenerator.MIPSTable;
+import mipsgenerator.instruction.MIPSDefGlobalArr;
 
 import java.util.ArrayList;
 
@@ -43,5 +45,11 @@ public class LLVMDefGlobalArr implements LLVM {
             }
             strb.append("]\n");
         }
+    }
+
+    public void mipsGenerate(MIPSTable mipses) {
+        String mipslabel = label.substring(1);
+        MIPSDefGlobalArr mipsDefGlobalArr = new MIPSDefGlobalArr(mipslabel, size, values, this);
+        mipses.addMIPSDataSegment(mipsDefGlobalArr);
     }
 }

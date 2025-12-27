@@ -1,6 +1,8 @@
 package llvmgenerator.instruction;
 
 import llvmgenerator.LLVM;
+import mipsgenerator.MIPSTable;
+import mipsgenerator.instruction.MIPSDefStr;
 
 public class LLVMDefStr implements LLVM {
     private String label;
@@ -33,5 +35,11 @@ public class LLVMDefStr implements LLVM {
         strb.append(" x i8] c\"");
         strb.append(llvmcontent);
         strb.append("\"\n");
+    }
+
+    public void mipsGenerate(MIPSTable mipses) {
+        String mipslabel = label.substring(1);
+        MIPSDefStr mipsDefStr = new MIPSDefStr(mipslabel, size, content, this);
+        mipses.addMIPSDataSegment(mipsDefStr);
     }
 }

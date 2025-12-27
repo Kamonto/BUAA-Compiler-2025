@@ -3,6 +3,8 @@ import lexer.Lexer;
 import lexer.Token;
 import llvmgenerator.LLVMGenerator;
 import llvmgenerator.LLVMTable;
+import mipsgenerator.MIPSGenerator;
+import mipsgenerator.MIPSTable;
 import parser.CompUnit;
 import parser.Parser;
 import symbolizer.Symbolizer;
@@ -52,5 +54,9 @@ public class Compiler {
         LLVMGenerator llvmGenerator = new LLVMGenerator(compUnit, symbols);
         LLVMTable llvms = llvmGenerator.llvmGenerate();
         llvmGenerator.printLLVMs();
+
+        MIPSGenerator mipsGenerator = new MIPSGenerator(llvms);
+        MIPSTable mipses = mipsGenerator.mipsGenerate();
+        mipsGenerator.printMIPSes();
     }
 }

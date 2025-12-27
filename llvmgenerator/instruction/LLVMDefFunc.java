@@ -1,6 +1,8 @@
 package llvmgenerator.instruction;
 
 import llvmgenerator.LLVM;
+import mipsgenerator.MIPSTable;
+import mipsgenerator.instruction.MIPSLabel;
 
 import java.util.ArrayList;
 
@@ -18,7 +20,7 @@ public class LLVMDefFunc implements LLVM {
     }
 
     public void print(StringBuilder strb) {
-        strb.append("\n");
+//        strb.append("\n");
         strb.append("define dso_local ");
         if (hasReturnValue) {
             strb.append("i32 ");
@@ -41,5 +43,12 @@ public class LLVMDefFunc implements LLVM {
             }
         }
         strb.append(") {\n");
+    }
+
+    public void mipsGenerate(MIPSTable mipses) {
+        String mipslabel = label.substring(1);
+        MIPSLabel mipsLabel = new MIPSLabel(mipslabel, this);
+        mipses.addMIPSTextSegment(mipsLabel);
+        mipses.newFunc(label, paramLabels);
     }
 }

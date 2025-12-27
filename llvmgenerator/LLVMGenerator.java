@@ -24,6 +24,7 @@ public class LLVMGenerator {
 
     public LLVMTable llvmGenerate() {
         compUnit.llvmGenerate(symbols, scope, llvms);
+        llvms.mergeLLVM();
         return llvms;
     }
 

@@ -1,6 +1,7 @@
 package llvmgenerator.instruction;
 
 import llvmgenerator.LLVM;
+import mipsgenerator.MIPSTable;
 
 public class LLVMImport implements LLVM {
     public void print(StringBuilder strb) {
@@ -10,5 +11,9 @@ public class LLVMImport implements LLVM {
                     "declare void @putch(i32)\n" +
                     "declare void @putstr(i8*)\n" +
                     "\n");
+    }
+
+    public void mipsGenerate(MIPSTable mipses) {
+
     }
 }
