@@ -82,23 +82,24 @@ public class FuncDef {
         if (hasFuncFParams) {
             funcFParams.llvmGenerate(paramNames, symbols, scope, llvms);
             for (int i = 0; i < size; i++) {
-                String templabel = "%" + scope.allocNumber();
+//                String templabel = "%" + scope.allocNumber();
                 Symbol tempsymbol = symbols.getSymbol(scope.getScope(), paramNames.get(i));
-                LLVMAllocVar llvmAllocVar = new LLVMAllocVar(templabel, isPointers.get(i));
-                llvms.addLLVM(llvmAllocVar);
-                LLVMStore llvmStore = new LLVMStore(paramLabels.get(i), templabel, isPointers.get(i));
-                llvms.addLLVM(llvmStore);
-                if (isPointers.get(i)) {
-                    String tempptrlabel = "%" + scope.allocNumber();
-                    LLVMLoad llvmLoad = new LLVMLoad(templabel, tempptrlabel, isPointers.get(i));
-                    llvms.addLLVM(llvmLoad);
-                    tempsymbol.setLabel(tempptrlabel);
-                    ArrSymbol temparrSymbol = symbols.getArrSymbol(scope.getScope(), paramNames.get(i));
-                    temparrSymbol.setLabel(tempptrlabel);
-                }
-                else {
-                    tempsymbol.setLabel(templabel);
-                }
+//                LLVMAllocVar llvmAllocVar = new LLVMAllocVar(templabel, isPointers.get(i));
+//                llvms.addLLVM(llvmAllocVar);
+//                LLVMStore llvmStore = new LLVMStore(paramLabels.get(i), templabel, isPointers.get(i));
+//                llvms.addLLVM(llvmStore);
+//                if (isPointers.get(i)) {
+//                    String tempptrlabel = "%" + scope.allocNumber();
+//                    LLVMLoad llvmLoad = new LLVMLoad(templabel, tempptrlabel, isPointers.get(i));
+//                    llvms.addLLVM(llvmLoad);
+//                    tempsymbol.setLabel(tempptrlabel);
+//                    ArrSymbol temparrSymbol = symbols.getArrSymbol(scope.getScope(), paramNames.get(i));
+//                    temparrSymbol.setLabel(tempptrlabel);
+//                }
+//                else {
+//                    tempsymbol.setLabel(templabel);
+//                }
+                tempsymbol.setLabel(paramLabels.get(i));
             }
         }
         scope.forcePop();

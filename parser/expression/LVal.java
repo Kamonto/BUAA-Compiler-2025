@@ -40,6 +40,10 @@ public class LVal {
         }
     }
 
+    public boolean getIsArray() {
+        return isArray;
+    }
+
     public boolean isArray(SymbolTable symbols, Scope scope) {
         if (isArray) {
             return false;
@@ -79,24 +83,16 @@ public class LVal {
                 break;
             }
         }
-        ArrSymbol arrSymbol;
-        int size = -2;   // -2: not array; -1: ptr array; >0: real array
-        if (symbol != null) {
-            arrSymbol = symbols.findArrSymbol(symbol.getScope(), ident.getContent());
-            if (arrSymbol != null) {
-                size = arrSymbol.getSize();
-            }
-        }
         if (isArray) {
             String offset = exp.llvmGenerate(symbols, scope, llvms);
-            String ptrlabel = "%" + scope.allocNumber();
-            if (size == -1) {
+            String ptrlabel;
+            if (!offset.matches("-?\\d+") || Integer.parseInt(offset) != 0) {
+                ptrlabel = "%" + scope.allocNumber();
                 LLVMGetElementPtr llvmGetElementPtr = new LLVMGetElementPtr(ptrlabel, label, offset);
                 llvms.addLLVM(llvmGetElementPtr);
             }
             else {
-                LLVMGetElementArr llvmGetElementArr = new LLVMGetElementArr(ptrlabel, size, label, offset);
-                llvms.addLLVM(llvmGetElementArr);
+                ptrlabel = label;
             }
             if (evaluate) {
                 String reslabel = "%" + scope.allocNumber();
@@ -109,26 +105,7 @@ public class LVal {
             }
         }
         else {
-            if (evaluate) {
-                if (size == -2) {
-                    String reslabel = "%" + scope.allocNumber();
-                    LLVMLoad llvmLoad = new LLVMLoad(label, reslabel, false);
-                    llvms.addLLVM(llvmLoad);
-                    return reslabel;
-                }
-                else if (size == -1) {
-                    return label;
-                }
-                else {
-                    String reslabel = "%" + scope.allocNumber();
-                    LLVMGetElementArr llvmGetElementArr = new LLVMGetElementArr(reslabel, size, label, "0");
-                    llvms.addLLVM(llvmGetElementArr);
-                    return reslabel;
-                }
-            }
-            else {
-                return label;
-            }
+            return label;
         }
     }
 }

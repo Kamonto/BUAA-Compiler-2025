@@ -147,12 +147,12 @@ public class VarDef {
                     int initsize = initlabels.size();
                     String templabel = null;
                     for (int i = 0; i < initsize; i++) {
-                        String reslabel = "%" + scope.allocNumber();
+                        String reslabel;
                         if (i == 0) {
-                            LLVMGetElementArr llvmGetElementArr = new LLVMGetElementArr(reslabel, size, label, "0");
-                            llvms.addLLVM(llvmGetElementArr);
+                            reslabel = label;
                         }
                         else {
+                            reslabel = "%" + scope.allocNumber();
                             LLVMGetElementPtr llvmGetElementPtr = new LLVMGetElementPtr(reslabel, templabel, "1");
                             llvms.addLLVM(llvmGetElementPtr);
                         }
@@ -163,12 +163,10 @@ public class VarDef {
                 }
             }
             else {
-                LLVMAllocVar llvmAllocVar = new LLVMAllocVar(label, false);
-                llvms.addLLVM(llvmAllocVar);
                 if (hasInitValue) {
                     String initlabel = initVal.llvmGenerate(symbols, scope, llvms).get(0);
-                    LLVMStore llvmStore = new LLVMStore(initlabel, label, false);
-                    llvms.addLLVM(llvmStore);
+                    LLVMMove llvmMove = new LLVMMove(initlabel, label);
+                    llvms.addLLVM(llvmMove);
                 }
             }
         }

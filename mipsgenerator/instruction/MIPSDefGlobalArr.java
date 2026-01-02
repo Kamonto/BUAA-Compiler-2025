@@ -22,6 +22,12 @@ public class MIPSDefGlobalArr implements MIPS {
         strb.append("    ");
         strb.append(mipslabel);
         strb.append(": .word ");
+        strb.append(mipslabel);
+        strb.append(".data\n");
+        strb.append("    ");
+        strb.append(mipslabel);
+        strb.append(".data");
+        strb.append(": .word ");
         for (int i = 0; i < size; i++) {
             if (i < size - 1) {
                 strb.append(values.get(i));

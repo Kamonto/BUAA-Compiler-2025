@@ -89,12 +89,12 @@ public class ConstDef {
                 llvms.addLLVM(llvmAllocArr);
                 String templabel = null;
                 for (int i = 0; i < size; i++) {
-                    String reslabel = "%" + scope.allocNumber();
+                    String reslabel;
                     if (i == 0) {
-                        LLVMGetElementArr llvmGetElementArr = new LLVMGetElementArr(reslabel, size, label, "0");
-                        llvms.addLLVM(llvmGetElementArr);
+                        reslabel = label;
                     }
                     else {
+                        reslabel = "%" + scope.allocNumber();
                         LLVMGetElementPtr llvmGetElementPtr = new LLVMGetElementPtr(reslabel, templabel, "1");
                         llvms.addLLVM(llvmGetElementPtr);
                     }
@@ -108,10 +108,8 @@ public class ConstDef {
                 ConstSymbol constSymbol = new ConstSymbol(scope, ident.getContent(), value);
                 constSymbol.setLabel(label);
                 symbols.addConstSymbol(constSymbol);
-                LLVMAllocVar llvmAllocVar = new LLVMAllocVar(label, false);
-                llvms.addLLVM(llvmAllocVar);
-                LLVMStore llvmStore = new LLVMStore(Integer.toString(value), label, false);
-                llvms.addLLVM(llvmStore);
+                LLVMMove llvmMove = new LLVMMove(Integer.toString(value), label);
+                llvms.addLLVM(llvmMove);
             }
         }
     }

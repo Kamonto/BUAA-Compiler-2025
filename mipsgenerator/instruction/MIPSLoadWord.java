@@ -7,10 +7,10 @@ import mipsgenerator.Register;
 public class MIPSLoadWord implements MIPS {
     private Register dstreg;
     private Register basereg;
-    private int offset;
+    private String offset;
     private LLVM reference;
 
-    public MIPSLoadWord(Register dstreg, Register basereg, int offset, LLVM reference) {
+    public MIPSLoadWord(Register dstreg, Register basereg, String offset, LLVM reference) {
         this.dstreg = dstreg;
         this.basereg = basereg;
         this.offset = offset;

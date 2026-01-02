@@ -98,8 +98,8 @@ public class MIPSTable {
         char c = label.charAt(0);
         if (c == '@') {
             String mipslabel = label.substring(1);
-            MIPSLoadAddr mipsLoadAddr = new MIPSLoadAddr(reg, mipslabel, reference);
-            mipsTextSegments.add(mipsLoadAddr);
+            MIPSLoadWord mipsLoadWord = new MIPSLoadWord(reg, Register.$zero, mipslabel, reference);
+            mipsTextSegments.add(mipsLoadWord);
         }
         else if (Character.isDigit(c)) {
             int imm = Integer.parseInt(label);
@@ -108,7 +108,7 @@ public class MIPSTable {
         }
         else {
             int spoffset = getspoffset(label);
-            MIPSLoadWord mipsLoadWord = new MIPSLoadWord(reg, Register.$sp, spoffset, reference);
+            MIPSLoadWord mipsLoadWord = new MIPSLoadWord(reg, Register.$sp, Integer.toString(spoffset), reference);
             mipsTextSegments.add(mipsLoadWord);
         }
     }
@@ -118,9 +118,16 @@ public class MIPSTable {
             allocStackSpace(label);
         }
         char c = label.charAt(0);
-        int spoffset = getspoffset(label);
-        MIPSStoreWord mipsStoreWord = new MIPSStoreWord(reg, Register.$sp, spoffset, reference);
-        mipsTextSegments.add(mipsStoreWord);
+        if (c == '@') {
+            String mipslabel = label.substring(1);
+            MIPSStoreWord mipsStoreWord = new MIPSStoreWord(reg, Register.$zero, mipslabel, reference);
+            mipsTextSegments.add(mipsStoreWord);
+        }
+        else {
+            int spoffset = getspoffset(label);
+            MIPSStoreWord mipsStoreWord = new MIPSStoreWord(reg, Register.$sp, Integer.toString(spoffset), reference);
+            mipsTextSegments.add(mipsStoreWord);
+        }
     }
 
     public void newFunc(String funcLabel, ArrayList<String> paramLabels) {

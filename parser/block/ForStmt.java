@@ -1,6 +1,7 @@
 package parser.block;
 
 import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.LLVMMove;
 import llvmgenerator.instruction.LLVMStore;
 import parser.expression.Exp;
 import parser.expression.LVal;
@@ -49,8 +50,14 @@ public class ForStmt {
         for (int i = 0; i < size; i++) {
             String dstlabel = lVals.get(i).llvmGenerate(false, symbols, scope, llvms);
             String srclabel = exps.get(i).llvmGenerate(symbols, scope, llvms);
-            LLVMStore llvmStore = new LLVMStore(srclabel, dstlabel, false);
-            llvms.addLLVM(llvmStore);
+            if (lVals.get(i).getIsArray()) {
+                LLVMStore llvmStore = new LLVMStore(srclabel, dstlabel, false);
+                llvms.addLLVM(llvmStore);
+            }
+            else {
+                LLVMMove llvmMove = new LLVMMove(srclabel, dstlabel);
+                llvms.addLLVM(llvmMove);
+            }
         }
     }
 }

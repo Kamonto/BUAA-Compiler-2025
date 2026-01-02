@@ -38,7 +38,7 @@ public class LLVMStore implements LLVM {
         mipses.loadLabel(srclabel, srcreg, this);
         Register dstreg = mipses.allocRegister(dstlabel);
         mipses.loadLabel(dstlabel, dstreg, this);
-        MIPSStoreWord mipsStoreWord = new MIPSStoreWord(srcreg, dstreg, 0, this);
+        MIPSStoreWord mipsStoreWord = new MIPSStoreWord(srcreg, dstreg, "0", this);
         mipses.addMIPSTextSegment(mipsStoreWord);
     }
 }

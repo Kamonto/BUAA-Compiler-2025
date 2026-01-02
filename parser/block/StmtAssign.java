@@ -1,6 +1,7 @@
 package parser.block;
 
 import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.LLVMMove;
 import llvmgenerator.instruction.LLVMStore;
 import parser.expression.Exp;
 import parser.expression.LVal;
@@ -32,7 +33,13 @@ public class StmtAssign implements Stmt {
     public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
         String dstlabel = lVal.llvmGenerate(false, symbols, scope, llvms);
         String srclabel = exp.llvmGenerate(symbols, scope, llvms);
-        LLVMStore llvmStore = new LLVMStore(srclabel, dstlabel, false);
-        llvms.addLLVM(llvmStore);
+        if (lVal.getIsArray()) {
+            LLVMStore llvmStore = new LLVMStore(srclabel, dstlabel, false);
+            llvms.addLLVM(llvmStore);
+        }
+        else {
+            LLVMMove llvmMove = new LLVMMove(srclabel, dstlabel);
+            llvms.addLLVM(llvmMove);
+        }
     }
 }
