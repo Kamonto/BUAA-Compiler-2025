@@ -5,6 +5,8 @@ import mipsgenerator.MIPSTable;
 import mipsgenerator.Register;
 import mipsgenerator.instruction.MIPSGetInt;
 
+import java.util.HashSet;
+
 public class LLVMGetInt implements LLVM {
     private String label;
 
@@ -23,5 +25,14 @@ public class LLVMGetInt implements LLVM {
         MIPSGetInt mipsGetInt = new MIPSGetInt(dstreg, this);
         mipses.addMIPSTextSegment(mipsGetInt);
         mipses.storeLabel(label, dstreg, this);
+    }
+
+    public String getDef() {
+        return label;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        return set;
     }
 }

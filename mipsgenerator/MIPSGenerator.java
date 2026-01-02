@@ -13,7 +13,7 @@ public class MIPSGenerator {
 
     public MIPSGenerator(LLVMTable llvms) {
         this.llvms = llvms;
-        this.mipses = new MIPSTable();
+        this.mipses = new MIPSTable(llvms);
     }
 
     public MIPSTable mipsGenerate() {

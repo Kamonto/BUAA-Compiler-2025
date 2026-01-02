@@ -83,4 +83,8 @@ public class LLVMTable {
             mergedllvms.add(llvm);
         }
     }
+
+    public ArrayList<LLVM> getMergedllvms() {
+        return mergedllvms;
+    }
 }

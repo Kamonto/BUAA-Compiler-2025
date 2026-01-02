@@ -7,6 +7,8 @@ import mipsgenerator.instruction.MIPSAdd;
 import mipsgenerator.instruction.MIPSAddi;
 import mipsgenerator.instruction.MIPSShiftLeftLogical;
 
+import java.util.HashSet;
+
 public class LLVMGetElementArr implements LLVM {
     private String reslabel;
     private int size;
@@ -53,5 +55,16 @@ public class LLVMGetElementArr implements LLVM {
             mipses.addMIPSTextSegment(mipsAdd);
             mipses.storeLabel(reslabel, resreg, this);
         }
+    }
+
+    public String getDef() {
+        return reslabel;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        set.add(label);
+        set.add(offset);
+        return set;
     }
 }

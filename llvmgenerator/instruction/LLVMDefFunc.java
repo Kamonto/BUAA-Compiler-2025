@@ -5,6 +5,7 @@ import mipsgenerator.MIPSTable;
 import mipsgenerator.instruction.MIPSLabel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class LLVMDefFunc implements LLVM {
     private String label;
@@ -49,6 +50,15 @@ public class LLVMDefFunc implements LLVM {
         String mipslabel = label.substring(1);
         MIPSLabel mipsLabel = new MIPSLabel(mipslabel, this);
         mipses.addMIPSTextSegment(mipsLabel);
-        mipses.newFunc(label, paramLabels);
+        mipses.newFunc(label, paramLabels, this);
+    }
+
+    public String getDef() {
+        return null;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        return set;
     }
 }

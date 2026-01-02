@@ -4,6 +4,8 @@ import llvmgenerator.LLVM;
 import mipsgenerator.MIPSTable;
 import mipsgenerator.instruction.MIPSDefGlobalVar;
 
+import java.util.HashSet;
+
 public class LLVMDefGlobalVar implements LLVM {
     private String label;
     private int value;
@@ -24,5 +26,14 @@ public class LLVMDefGlobalVar implements LLVM {
         String mipslabel = label.substring(1);
         MIPSDefGlobalVar mipsDefGlobalVar = new MIPSDefGlobalVar(mipslabel, value, this);
         mipses.addMIPSDataSegment(mipsDefGlobalVar);
+    }
+
+    public String getDef() {
+        return null;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        return set;
     }
 }

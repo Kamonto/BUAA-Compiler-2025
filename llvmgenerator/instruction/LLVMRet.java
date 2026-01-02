@@ -4,7 +4,10 @@ import llvmgenerator.LLVM;
 import mipsgenerator.MIPSTable;
 import mipsgenerator.Register;
 import mipsgenerator.instruction.MIPSJumpRegister;
+import mipsgenerator.instruction.MIPSMove;
 import mipsgenerator.instruction.MIPSOver;
+
+import java.util.HashSet;
 
 public class LLVMRet implements LLVM {
     boolean hasReturnValue;
@@ -35,10 +38,25 @@ public class LLVMRet implements LLVM {
         }
         else {
             if (hasReturnValue) {
-                mipses.loadLabel(label, Register.$v0, this);
+                Register reg = mipses.allocRegister(label);
+                mipses.loadLabel(label, reg, this);
+                MIPSMove mipsMove = new MIPSMove(reg, Register.$v0, this);
+                mipses.addMIPSTextSegment(mipsMove);
             }
             MIPSJumpRegister mipsJumpRegister = new MIPSJumpRegister(Register.$ra, this);
             mipses.addMIPSTextSegment(mipsJumpRegister);
         }
+    }
+
+    public String getDef() {
+        return null;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        if (hasReturnValue) {
+            set.add(label);
+        }
+        return set;
     }
 }

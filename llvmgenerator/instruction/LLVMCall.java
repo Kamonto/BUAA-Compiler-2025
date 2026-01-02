@@ -5,8 +5,10 @@ import mipsgenerator.MIPSTable;
 import mipsgenerator.Register;
 import mipsgenerator.instruction.MIPSAddi;
 import mipsgenerator.instruction.MIPSJumpAndLink;
+import mipsgenerator.instruction.MIPSMove;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class LLVMCall implements LLVM {
     private String reslabel;
@@ -55,7 +57,7 @@ public class LLVMCall implements LLVM {
 
     public void mipsGenerate(MIPSTable mipses) {
         int callCount = mipses.getCallCount();
-        ArrayList<Register> usingRegs = new ArrayList<Register>();
+        ArrayList<Register> usingRegs = mipses.getActiveRegsWhenCall(this);
         usingRegs.add(Register.$sp);
         usingRegs.add(Register.$ra);
         for (int i = 0; i < usingRegs.size(); i++) {
@@ -89,8 +91,28 @@ public class LLVMCall implements LLVM {
             mipses.loadLabel(label, usingReg, this);
         }
         if (hasReturnValue) {
-            mipses.storeLabel(reslabel, Register.$v0, this);
+            Register resreg = mipses.allocRegister(reslabel);
+            MIPSMove mipsMove = new MIPSMove(Register.$v0, resreg, this);
+            mipses.addMIPSTextSegment(mipsMove);
+            mipses.storeLabel(reslabel, resreg, this);
         }
         mipses.updateCallCount();
+    }
+
+    public String getDef() {
+        if (hasReturnValue) {
+            return reslabel;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        for (String paramLabel : paramLabels) {
+            set.add(paramLabel);
+        }
+        return set;
     }
 }

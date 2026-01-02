@@ -5,6 +5,8 @@ import mipsgenerator.MIPSTable;
 import mipsgenerator.Register;
 import mipsgenerator.instruction.MIPSMove;
 
+import java.util.HashSet;
+
 public class LLVMZext implements LLVM {
     private String srclabel;
     private String dstlabel;
@@ -29,5 +31,15 @@ public class LLVMZext implements LLVM {
         MIPSMove mipsMove = new MIPSMove(srcreg, dstreg, this);
         mipses.addMIPSTextSegment(mipsMove);
         mipses.storeLabel(dstlabel, dstreg, this);
+    }
+
+    public String getDef() {
+        return dstlabel;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        set.add(srclabel);
+        return set;
     }
 }

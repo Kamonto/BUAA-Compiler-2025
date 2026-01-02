@@ -1,45 +1,47 @@
 package mipsgenerator;
 
 import llvmgenerator.LLVM;
-import mipsgenerator.instruction.MIPSLoadAddr;
+import llvmgenerator.LLVMTable;
+import llvmgenerator.instruction.LLVMDefFuncEnd;
 import mipsgenerator.instruction.MIPSLoadImm;
 import mipsgenerator.instruction.MIPSLoadWord;
 import mipsgenerator.instruction.MIPSStoreWord;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MIPSTable {
+    private final LLVMTable llvms;
     private ArrayList<MIPS> mipsDataSegments;
     private ArrayList<MIPS> mipsTextSegments;
-    private HashMap<String, Register> regs;
+    private Optimizer optimizer;
+    private HashMap<String, Register> label2regs;
     private int nowfpoffset;
     private HashMap<String, Integer> spoffsets;
     private int nowspoffset;
     private String nowFunc;
     private int callCount;
-    private ArrayList<Register> pool;
-    private int poolindex;
+    private ArrayList<Register> tempPool;
+    private int tempPoolindex;
 
-    public MIPSTable() {
+    public MIPSTable(LLVMTable llvms) {
+        this.llvms = llvms;
         mipsDataSegments = new ArrayList<MIPS>();
         mipsTextSegments = new ArrayList<MIPS>();
-        regs = new HashMap<String, Register>();
         nowfpoffset = 0;
         spoffsets = new HashMap<String, Integer>();
         nowspoffset = 0;
         nowFunc = null;
         callCount = 0;
-        pool = new ArrayList<Register>();
-        pool.add(Register.$t0);
-        pool.add(Register.$t1);
-        pool.add(Register.$t2);
-        pool.add(Register.$t3);
-        pool.add(Register.$t4);
-        pool.add(Register.$t5);
-        pool.add(Register.$t6);
-        pool.add(Register.$t7);
-        poolindex = 0;
+        tempPool = new ArrayList<Register>();
+        initTempPool();
+        tempPoolindex = 0;
+    }
+
+    private void initTempPool() {
+        tempPool = new ArrayList<Register>(List.of(Register.$t0, Register.$t1, Register.$t2,
+                Register.$t3, Register.$t4, Register.$t5, Register.$t6, Register.$t7));
     }
 
     public int getNowfpoffset() {
@@ -89,8 +91,19 @@ public class MIPSTable {
     }
 
     public Register allocRegister(String label) {
-        Register reg = pool.get(poolindex);
-        poolindex = (poolindex + 1) % pool.size();
+        if (label2regs.containsKey(label)) {
+            return label2regs.get(label);
+        }
+        else {
+            Register reg = tempPool.get(tempPoolindex);
+            tempPoolindex = (tempPoolindex + 1) % tempPool.size();
+            return reg;
+        }
+    }
+
+    public Register allocTempRegister() {
+        Register reg = tempPool.get(tempPoolindex);
+        tempPoolindex = (tempPoolindex + 1) % tempPool.size();
         return reg;
     }
 
@@ -107,9 +120,11 @@ public class MIPSTable {
             mipsTextSegments.add(mipsLoadImm);
         }
         else {
-            int spoffset = getspoffset(label);
-            MIPSLoadWord mipsLoadWord = new MIPSLoadWord(reg, Register.$sp, Integer.toString(spoffset), reference);
-            mipsTextSegments.add(mipsLoadWord);
+            if (!label2regs.containsKey(label)) {
+                int spoffset = getspoffset(label);
+                MIPSLoadWord mipsLoadWord = new MIPSLoadWord(reg, Register.$sp, Integer.toString(spoffset), reference);
+                mipsTextSegments.add(mipsLoadWord);
+            }
         }
     }
 
@@ -124,20 +139,46 @@ public class MIPSTable {
             mipsTextSegments.add(mipsStoreWord);
         }
         else {
-            int spoffset = getspoffset(label);
-            MIPSStoreWord mipsStoreWord = new MIPSStoreWord(reg, Register.$sp, Integer.toString(spoffset), reference);
-            mipsTextSegments.add(mipsStoreWord);
+            if (!label2regs.containsKey(label)) {
+                int spoffset = getspoffset(label);
+                MIPSStoreWord mipsStoreWord = new MIPSStoreWord(reg, Register.$sp, Integer.toString(spoffset), reference);
+                mipsTextSegments.add(mipsStoreWord);
+            }
         }
     }
 
-    public void newFunc(String funcLabel, ArrayList<String> paramLabels) {
+    public void newFunc(String funcLabel, ArrayList<String> paramLabels, LLVM reference) {
         nowFunc = funcLabel.substring(1);
         spoffsets.clear();
         nowfpoffset = 0;
         nowspoffset = 0;
+        optimizer = new Optimizer(funcllvms(llvms.getMergedllvms(), reference));
+        optimizer.cutBlocks();
+        optimizer.defuse();
+        optimizer.allocreg();
+        label2regs = optimizer.getLabel2regs();
         for (String paramLabel : paramLabels) {
             allocStackSpace(paramLabel);
         }
+        for (String paramLabel : paramLabels) {
+            if (label2regs.containsKey(paramLabel)) {
+                Register reg = label2regs.get(paramLabel);
+                int spoffset = getspoffset(paramLabel);
+                MIPSLoadWord mipsLoadWord = new MIPSLoadWord(reg, Register.$sp, Integer.toString(spoffset), reference);
+                mipsTextSegments.add(mipsLoadWord);
+            }
+        }
+    }
+
+    public ArrayList<Register> getActiveRegsWhenCall(LLVM reference) {
+        ArrayList<Register> activeRegsWhenCall = new ArrayList<Register>();
+        ArrayList<String> activeLabelsWhenCall = optimizer.getActiveLabelsWhenCall(reference);
+        for (String label : activeLabelsWhenCall) {
+            if (label2regs.containsKey(label)) {
+                activeRegsWhenCall.add(label2regs.get(label));
+            }
+        }
+        return activeRegsWhenCall;
     }
 
     public StringBuilder print() {
@@ -154,5 +195,18 @@ public class MIPSTable {
             mips.print(strb);
         }
         return strb;
+    }
+
+    private ArrayList<LLVM> funcllvms(ArrayList<LLVM> llvms, LLVM reference) {
+        ArrayList<LLVM> funcllvms = new ArrayList<LLVM>();
+        int index = llvms.indexOf(reference);
+        while (true) {
+            if (llvms.get(index) instanceof LLVMDefFuncEnd) {
+                break;
+            }
+            funcllvms.add(llvms.get(index));
+            index++;
+        }
+        return funcllvms;
     }
 }

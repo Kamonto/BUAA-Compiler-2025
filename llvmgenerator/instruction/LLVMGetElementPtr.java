@@ -7,6 +7,8 @@ import mipsgenerator.instruction.MIPSAdd;
 import mipsgenerator.instruction.MIPSAddi;
 import mipsgenerator.instruction.MIPSShiftLeftLogical;
 
+import java.util.HashSet;
+
 public class LLVMGetElementPtr implements LLVM {
     private String reslabel;
     private String label;
@@ -40,12 +42,24 @@ public class LLVMGetElementPtr implements LLVM {
         else {
             Register offsetreg = mipses.allocRegister(offset);
             mipses.loadLabel(offset, offsetreg, this);
-            MIPSShiftLeftLogical mipsShiftLeftLogical = new MIPSShiftLeftLogical(offsetreg, offsetreg, 2, this);
+            Register tempreg = mipses.allocTempRegister();
+            MIPSShiftLeftLogical mipsShiftLeftLogical = new MIPSShiftLeftLogical(tempreg, offsetreg, 2, this);
             mipses.addMIPSTextSegment(mipsShiftLeftLogical);
             Register resreg = mipses.allocRegister(reslabel);
-            MIPSAdd mipsAdd = new MIPSAdd(resreg, reg, offsetreg, this);
+            MIPSAdd mipsAdd = new MIPSAdd(resreg, reg, tempreg, this);
             mipses.addMIPSTextSegment(mipsAdd);
             mipses.storeLabel(reslabel, resreg, this);
         }
+    }
+
+    public String getDef() {
+        return reslabel;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        set.add(label);
+        set.add(offset);
+        return set;
     }
 }

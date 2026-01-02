@@ -5,6 +5,8 @@ import mipsgenerator.MIPSTable;
 import mipsgenerator.Register;
 import mipsgenerator.instruction.MIPSSet;
 
+import java.util.HashSet;
+
 public class LLVMIcmp implements LLVM {
     private String reslabel;
     private int op;
@@ -56,5 +58,16 @@ public class LLVMIcmp implements LLVM {
         MIPSSet mipsSet = new MIPSSet(resreg, op, reg1, reg2, this);
         mipses.addMIPSTextSegment(mipsSet);
         mipses.storeLabel(reslabel, resreg, this);
+    }
+
+    public String getDef() {
+        return reslabel;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        set.add(label1);
+        set.add(label2);
+        return set;
     }
 }

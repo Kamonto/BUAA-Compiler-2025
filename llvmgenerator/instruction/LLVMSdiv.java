@@ -5,6 +5,8 @@ import mipsgenerator.MIPSTable;
 import mipsgenerator.Register;
 import mipsgenerator.instruction.MIPSSdiv;
 
+import java.util.HashSet;
+
 public class LLVMSdiv implements LLVM {
     private String reslabel;
     private String label1;
@@ -35,5 +37,16 @@ public class LLVMSdiv implements LLVM {
         MIPSSdiv mipsSdiv = new MIPSSdiv(resreg, reg1, reg2, this);
         mipses.addMIPSTextSegment(mipsSdiv);
         mipses.storeLabel(reslabel, resreg, this);
+    }
+
+    public String getDef() {
+        return reslabel;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        set.add(label1);
+        set.add(label2);
+        return set;
     }
 }

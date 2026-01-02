@@ -5,6 +5,8 @@ import mipsgenerator.MIPSTable;
 import mipsgenerator.Register;
 import mipsgenerator.instruction.MIPSAddi;
 
+import java.util.HashSet;
+
 public class LLVMAllocVar implements LLVM {
     private String label;
     private boolean isPointer;
@@ -30,5 +32,14 @@ public class LLVMAllocVar implements LLVM {
         MIPSAddi mipsAddi = new MIPSAddi(reg, Register.$fp, fpoffset, this);
         mipses.addMIPSTextSegment(mipsAddi);
         mipses.storeLabel(label, reg, this);
+    }
+
+    public String getDef() {
+        return label;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        return set;
     }
 }

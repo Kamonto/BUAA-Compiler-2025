@@ -5,6 +5,8 @@ import mipsgenerator.MIPSTable;
 import mipsgenerator.Register;
 import mipsgenerator.instruction.MIPSStoreWord;
 
+import java.util.HashSet;
+
 public class LLVMStore implements LLVM {
     private String srclabel;
     private String dstlabel;
@@ -40,5 +42,16 @@ public class LLVMStore implements LLVM {
         mipses.loadLabel(dstlabel, dstreg, this);
         MIPSStoreWord mipsStoreWord = new MIPSStoreWord(srcreg, dstreg, "0", this);
         mipses.addMIPSTextSegment(mipsStoreWord);
+    }
+
+    public String getDef() {
+        return null;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        set.add(srclabel);
+        set.add(dstlabel);
+        return set;
     }
 }

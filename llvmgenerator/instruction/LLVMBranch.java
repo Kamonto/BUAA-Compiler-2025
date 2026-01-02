@@ -6,6 +6,8 @@ import mipsgenerator.Register;
 import mipsgenerator.instruction.MIPSBranchIfNotEqualZero;
 import mipsgenerator.instruction.MIPSJump;
 
+import java.util.HashSet;
+
 public class LLVMBranch implements LLVM {
     private String bitlabel;
     private LLVMLabel label1;
@@ -15,6 +17,14 @@ public class LLVMBranch implements LLVM {
         this.bitlabel = bitlabel;
         this.label1 = label1;
         this.label2 = label2;
+    }
+
+    public LLVMLabel getLabel1() {
+        return label1;
+    }
+
+    public LLVMLabel getLabel2() {
+        return label2;
     }
 
     public void print(StringBuilder strb) {
@@ -37,5 +47,15 @@ public class LLVMBranch implements LLVM {
         String mipslabel2 = mipses.getNowFunc() + "_" + label2.getNumber();
         MIPSJump mipsJump = new MIPSJump(mipslabel2, this);
         mipses.addMIPSTextSegment(mipsJump);
+    }
+
+    public String getDef() {
+        return null;
+    }
+
+    public HashSet<String> getUse() {
+        HashSet<String> set = new HashSet<String>();
+        set.add(bitlabel);
+        return set;
     }
 }
