@@ -50,21 +50,12 @@ public class EqExp {
             else {
                 String label1 = reslabel;
                 String label2 = relExps.get(i).llvmGenerate(symbols, scope, llvms);
-                String templabel = "%" + scope.allocNumber();
-                LLVMIcmp llvmIcmp = new LLVMIcmp(templabel, opTypes.get(i) - 1, label1, label2);
-                llvms.addLLVM(llvmIcmp);
                 reslabel = "%" + scope.allocNumber();
-                LLVMZext llvmZext = new LLVMZext(templabel, reslabel);
-                llvms.addLLVM(llvmZext);
+                LLVMIcmp llvmIcmp = new LLVMIcmp(reslabel, opTypes.get(i) - 1, label1, label2);
+                llvms.addLLVM(llvmIcmp);
             }
         }
-        String bitlabel = null;
-        if (reslabel != null) {
-            bitlabel = "%" + scope.allocNumber();
-            LLVMIcmp llvmIcmp = new LLVMIcmp(bitlabel, 1, reslabel, "0");
-            llvms.addLLVM(llvmIcmp);
-        }
-        LLVMBranch llvmBranch = new LLVMBranch(bitlabel, trueLabel, falseLabel);
+        LLVMBranch llvmBranch = new LLVMBranch(reslabel, trueLabel, falseLabel, llvms.getMergedllvms());
         llvms.addLLVM(llvmBranch);
     }
 }

@@ -142,9 +142,15 @@ public class UnaryExp {
         }
         if (reslabel != null && op == -1) {
             String oldlabel = reslabel;
-            reslabel = "%" + scope.allocNumber();
-            LLVMSub llvmSub = new LLVMSub(reslabel, "0", oldlabel);
-            llvms.addLLVM(llvmSub);
+            if (oldlabel.matches("-?\\d+")) {
+                int res = -Integer.parseInt(oldlabel);
+                reslabel = Integer.toString(res);
+            }
+            else {
+                reslabel = "%" + scope.allocNumber();
+                LLVMSub llvmSub = new LLVMSub(reslabel, "0", oldlabel);
+                llvms.addLLVM(llvmSub);
+            }
         }
         if (reslabel != null && op == 0) {
             String oldlabel = reslabel;
@@ -157,10 +163,6 @@ public class UnaryExp {
                 LLVMIcmp llvmIcmp = new LLVMIcmp(reslabel, 1, oldlabel, "0");
                 llvms.addLLVM(llvmIcmp);
             }
-            oldlabel = reslabel;
-            reslabel = "%" + scope.allocNumber();
-            LLVMZext llvmZext = new LLVMZext(oldlabel, reslabel);
-            llvms.addLLVM(llvmZext);
         }
         return reslabel;
     }

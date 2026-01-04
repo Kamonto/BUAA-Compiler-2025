@@ -145,20 +145,20 @@ public class VarDef {
                 if (hasInitValue) {
                     ArrayList<String> initlabels = initVal.llvmGenerate(symbols, scope, llvms);
                     int initsize = initlabels.size();
-                    String templabel = null;
                     for (int i = 0; i < initsize; i++) {
-                        String reslabel;
-                        if (i == 0) {
-                            reslabel = label;
+                        if (!initlabels.get(i).equals("0")) {
+                            String reslabel;
+                            if (i == 0) {
+                                reslabel = label;
+                            }
+                            else {
+                                reslabel = "%" + scope.allocNumber();
+                                LLVMGetElementPtr llvmGetElementPtr = new LLVMGetElementPtr(reslabel, label, Integer.toString(i));
+                                llvms.addLLVM(llvmGetElementPtr);
+                            }
+                            LLVMStore llvmStore = new LLVMStore(initlabels.get(i), reslabel, false);
+                            llvms.addLLVM(llvmStore);
                         }
-                        else {
-                            reslabel = "%" + scope.allocNumber();
-                            LLVMGetElementPtr llvmGetElementPtr = new LLVMGetElementPtr(reslabel, templabel, "1");
-                            llvms.addLLVM(llvmGetElementPtr);
-                        }
-                        templabel = reslabel;
-                        LLVMStore llvmStore = new LLVMStore(initlabels.get(i), reslabel, false);
-                        llvms.addLLVM(llvmStore);
                     }
                 }
             }

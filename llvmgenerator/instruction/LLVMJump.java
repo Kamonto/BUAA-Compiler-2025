@@ -4,13 +4,16 @@ import llvmgenerator.LLVM;
 import mipsgenerator.MIPSTable;
 import mipsgenerator.instruction.MIPSJump;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class LLVMJump implements LLVM {
     private LLVMLabel label;
+    private ArrayList<LLVM> llvms;
 
-    public LLVMJump(LLVMLabel label) {
+    public LLVMJump(LLVMLabel label, ArrayList<LLVM> llvms) {
         this.label = label;
+        this.llvms = llvms;
     }
 
     public LLVMLabel getLabel() {
@@ -25,9 +28,23 @@ public class LLVMJump implements LLVM {
     }
 
     public void mipsGenerate(MIPSTable mipses) {
-        String mipslabel = mipses.getNowFunc() + "_" + label.getNumber();
-        MIPSJump mipsJump = new MIPSJump(mipslabel, this);
-        mipses.addMIPSTextSegment(mipsJump);
+        int index = llvms.indexOf(this);
+        if (index < llvms.size() - 1 && llvms.get(index + 1) instanceof LLVMLabel) {
+            LLVMLabel llvmLabel = (LLVMLabel) llvms.get(index + 1);
+            if (label == llvmLabel) {
+                // do nothing
+            }
+            else {
+                String mipslabel = mipses.getNowFunc() + "_" + label.getNumber();
+                MIPSJump mipsJump = new MIPSJump(mipslabel, this);
+                mipses.addMIPSTextSegment(mipsJump);
+            }
+        }
+        else {
+            String mipslabel = mipses.getNowFunc() + "_" + label.getNumber();
+            MIPSJump mipsJump = new MIPSJump(mipslabel, this);
+            mipses.addMIPSTextSegment(mipsJump);
+        }
     }
 
     public String getDef() {

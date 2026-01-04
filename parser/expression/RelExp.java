@@ -56,12 +56,9 @@ public class RelExp {
             else {
                 String label1 = reslabel;
                 String label2 = addExps.get(i).llvmGenerate(symbols, scope, llvms);
-                String templabel = "%" + scope.allocNumber();
-                LLVMIcmp llvmIcmp = new LLVMIcmp(templabel, opTypes.get(i) + 1, label1, label2);
-                llvms.addLLVM(llvmIcmp);
                 reslabel = "%" + scope.allocNumber();
-                LLVMZext llvmZext = new LLVMZext(templabel, reslabel);
-                llvms.addLLVM(llvmZext);
+                LLVMIcmp llvmIcmp = new LLVMIcmp(reslabel, opTypes.get(i) + 1, label1, label2);
+                llvms.addLLVM(llvmIcmp);
             }
         }
         return reslabel;

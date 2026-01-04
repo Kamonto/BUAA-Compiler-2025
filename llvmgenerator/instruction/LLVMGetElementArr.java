@@ -39,7 +39,7 @@ public class LLVMGetElementArr implements LLVM {
     public void mipsGenerate(MIPSTable mipses) {
         Register reg = mipses.allocRegister(label);
         mipses.loadLabel(label, reg, this);
-        if (Character.isDigit(offset.charAt(0))) {
+        if (offset.matches("-?\\d+")) {
             Register resreg = mipses.allocRegister(reslabel);
             MIPSAddi mipsAddi = new MIPSAddi(resreg, reg, Integer.parseInt(offset) * 4, this);
             mipses.addMIPSTextSegment(mipsAddi);

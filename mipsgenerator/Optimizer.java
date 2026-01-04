@@ -37,7 +37,7 @@ public class Optimizer {
     }
 
     private void initPool() {
-        pool = new ArrayList<Register>(List.of(Register.$a0, Register.$a1, Register.$a2, Register.$a3,
+        pool = new ArrayList<Register>(Arrays.asList(Register.$a0, Register.$a1, Register.$a2, Register.$a3,
                 Register.$s0, Register.$s1, Register.$s2, Register.$s3, Register.$s4, Register.$s5, Register.$s6, Register.$s7));
     }
 

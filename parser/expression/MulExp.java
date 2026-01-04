@@ -81,25 +81,57 @@ public class MulExp {
             else if (opTypes.get(i) == 1) {
                 String label1 = reslabel;
                 String label2 = unaryExps.get(i).llvmGenerate(symbols, scope, llvms);
-                reslabel = "%" + scope.allocNumber();
-                LLVMMul llvmMul = new LLVMMul(reslabel, label1, label2);
-                llvms.addLLVM(llvmMul);
+                if (label1.matches("-?\\d+") && label2.matches("-?\\d+")) {
+                    int res = Integer.parseInt(label1) * Integer.parseInt(label2);
+                    reslabel = Integer.toString(res);
+                }
+                else {
+                    reslabel = "%" + scope.allocNumber();
+                    LLVMMul llvmMul = new LLVMMul(reslabel, label1, label2);
+                    llvms.addLLVM(llvmMul);
+                }
             }
             else if (opTypes.get(i) == 2) {
                 String label1 = reslabel;
                 String label2 = unaryExps.get(i).llvmGenerate(symbols, scope, llvms);
-                reslabel = "%" + scope.allocNumber();
-                LLVMSdiv llvmSdiv = new LLVMSdiv(reslabel, label1, label2);
-                llvms.addLLVM(llvmSdiv);
+                if (label1.matches("-?\\d+") && label2.matches("-?\\d+")) {
+                    int res = Integer.parseInt(label1) / Integer.parseInt(label2);
+                    reslabel = Integer.toString(res);
+                }
+                else if (label2.matches("-?\\d+") && isPosPowOfTwo(Integer.parseInt(label2))) {
+                    int n = Integer.parseInt(label2);
+                    if (n == 1) {
+                        reslabel = label1;
+                    }
+                    else {
+                        int logn = Integer.numberOfTrailingZeros(i);
+                        
+                    }
+                }
+                else {
+                    reslabel = "%" + scope.allocNumber();
+                    LLVMSdiv llvmSdiv = new LLVMSdiv(reslabel, label1, label2);
+                    llvms.addLLVM(llvmSdiv);
+                }
             }
             else if (opTypes.get(i) == 3) {
                 String label1 = reslabel;
                 String label2 = unaryExps.get(i).llvmGenerate(symbols, scope, llvms);
-                reslabel = "%" + scope.allocNumber();
-                LLVMSrem llvmSrem = new LLVMSrem(reslabel, label1, label2);
-                llvms.addLLVM(llvmSrem);
+                if (label1.matches("-?\\d+") && label2.matches("-?\\d+")) {
+                    int res = Integer.parseInt(label1) % Integer.parseInt(label2);
+                    reslabel = Integer.toString(res);
+                }
+                else {
+                    reslabel = "%" + scope.allocNumber();
+                    LLVMSrem llvmSrem = new LLVMSrem(reslabel, label1, label2);
+                    llvms.addLLVM(llvmSrem);
+                }
             }
         }
         return reslabel;
+    }
+
+    private boolean isPosPowOfTwo(int n) {
+        return n > 0 && (n & (n - 1)) == 0;
     }
 }

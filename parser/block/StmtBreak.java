@@ -26,7 +26,7 @@ public class StmtBreak implements Stmt {
 
     public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
         LLVMLabel endLabel = scope.getEndLabel();
-        LLVMJump llvmJump = new LLVMJump(endLabel);
+        LLVMJump llvmJump = new LLVMJump(endLabel, llvms.getMergedllvms());
         llvms.addLLVM(llvmJump);
         LLVMLabel llvmLabel = new LLVMLabel();
         llvmLabel.setNumber(scope.allocNumber());

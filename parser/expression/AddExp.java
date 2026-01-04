@@ -76,16 +76,28 @@ public class AddExp {
             else if (opTypes.get(i) == 1) {
                 String label1 = reslabel;
                 String label2 = mulExps.get(i).llvmGenerate(symbols, scope, llvms);
-                reslabel = "%" + scope.allocNumber();
-                LLVMAdd llvmAdd = new LLVMAdd(reslabel, label1, label2);
-                llvms.addLLVM(llvmAdd);
+                if (label1.matches("-?\\d+") && label2.matches("-?\\d+")) {
+                    int res = Integer.parseInt(label1) + Integer.parseInt(label2);
+                    reslabel = Integer.toString(res);
+                }
+                else {
+                    reslabel = "%" + scope.allocNumber();
+                    LLVMAdd llvmAdd = new LLVMAdd(reslabel, label1, label2);
+                    llvms.addLLVM(llvmAdd);
+                }
             }
             else if (opTypes.get(i) == 2) {
                 String label1 = reslabel;
                 String label2 = mulExps.get(i).llvmGenerate(symbols, scope, llvms);
-                reslabel = "%" + scope.allocNumber();
-                LLVMSub llvmSub = new LLVMSub(reslabel, label1, label2);
-                llvms.addLLVM(llvmSub);
+                if (label1.matches("-?\\d+") && label2.matches("-?\\d+")) {
+                    int res = Integer.parseInt(label1) - Integer.parseInt(label2);
+                    reslabel = Integer.toString(res);
+                }
+                else {
+                    reslabel = "%" + scope.allocNumber();
+                    LLVMSub llvmSub = new LLVMSub(reslabel, label1, label2);
+                    llvms.addLLVM(llvmSub);
+                }
             }
         }
         return reslabel;

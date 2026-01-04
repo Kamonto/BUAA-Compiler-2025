@@ -48,12 +48,12 @@ public class StmtIf implements Stmt {
             trueLabel.setNumber(scope.allocNumber());
             llvms.addLLVM(trueLabel);
             stmt.llvmGenerate(symbols, scope, llvms);
-            LLVMJump llvmJump = new LLVMJump(endLabel);
+            LLVMJump llvmJump = new LLVMJump(endLabel, llvms.getMergedllvms());
             llvms.addLLVM(llvmJump);
             falseLabel.setNumber(scope.allocNumber());
             llvms.addLLVM(falseLabel);
             anostmt.llvmGenerate(symbols, scope, llvms);
-            LLVMJump anollvmJump = new LLVMJump(endLabel);
+            LLVMJump anollvmJump = new LLVMJump(endLabel, llvms.getMergedllvms());
             llvms.addLLVM(anollvmJump);
         }
         else {
@@ -61,7 +61,7 @@ public class StmtIf implements Stmt {
             trueLabel.setNumber(scope.allocNumber());
             llvms.addLLVM(trueLabel);
             stmt.llvmGenerate(symbols, scope, llvms);
-            LLVMJump llvmJump = new LLVMJump(endLabel);
+            LLVMJump llvmJump = new LLVMJump(endLabel, llvms.getMergedllvms());
             llvms.addLLVM(llvmJump);
         }
         endLabel.setNumber(scope.allocNumber());

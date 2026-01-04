@@ -26,7 +26,7 @@ public class StmtContinue implements Stmt {
 
     public void llvmGenerate(SymbolTable symbols, Scope scope, LLVMTable llvms) {
         LLVMLabel loopEndLabel = scope.getLoopEndLabel();
-        LLVMJump llvmJump = new LLVMJump(loopEndLabel);
+        LLVMJump llvmJump = new LLVMJump(loopEndLabel, llvms.getMergedllvms());
         llvms.addLLVM(llvmJump);
         LLVMLabel llvmLabel = new LLVMLabel();
         llvmLabel.setNumber(scope.allocNumber());

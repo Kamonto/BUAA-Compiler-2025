@@ -69,7 +69,7 @@ public class StmtFor implements Stmt {
         LLVMLabel endLabel = new LLVMLabel();
         scope.loopEndLabelStackPush(loopEndLabel);
         scope.endLabelStackPush(endLabel);
-        LLVMJump llvmJump1 = new LLVMJump(beginLabel);
+        LLVMJump llvmJump1 = new LLVMJump(beginLabel, llvms.getMergedllvms());
         llvms.addLLVM(llvmJump1);
         beginLabel.setNumber(scope.allocNumber());
         llvms.addLLVM(beginLabel);
@@ -80,14 +80,14 @@ public class StmtFor implements Stmt {
             llvms.addLLVM(loopLabel);
         }
         stmt.llvmGenerate(symbols, scope, llvms);
-        LLVMJump llvmJump2 = new LLVMJump(loopEndLabel);
+        LLVMJump llvmJump2 = new LLVMJump(loopEndLabel, llvms.getMergedllvms());
         llvms.addLLVM(llvmJump2);
         loopEndLabel.setNumber(scope.allocNumber());
         llvms.addLLVM(loopEndLabel);
         if (hasLatterForStmt) {
             anoForStmt.llvmGenerate(symbols, scope, llvms);
         }
-        LLVMJump llvmJump3 = new LLVMJump(beginLabel);
+        LLVMJump llvmJump3 = new LLVMJump(beginLabel, llvms.getMergedllvms());
         llvms.addLLVM(llvmJump3);
         endLabel.setNumber(scope.allocNumber());
         llvms.addLLVM(endLabel);

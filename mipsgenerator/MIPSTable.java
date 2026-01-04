@@ -8,6 +8,7 @@ import mipsgenerator.instruction.MIPSLoadWord;
 import mipsgenerator.instruction.MIPSStoreWord;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class MIPSTable {
     }
 
     private void initTempPool() {
-        tempPool = new ArrayList<Register>(List.of(Register.$t0, Register.$t1, Register.$t2,
+        tempPool = new ArrayList<Register>(Arrays.asList(Register.$t0, Register.$t1, Register.$t2,
                 Register.$t3, Register.$t4, Register.$t5, Register.$t6, Register.$t7));
     }
 
@@ -108,13 +109,12 @@ public class MIPSTable {
     }
 
     public void loadLabel(String label, Register reg, LLVM reference) {
-        char c = label.charAt(0);
-        if (c == '@') {
+        if (label.charAt(0) == '@') {
             String mipslabel = label.substring(1);
             MIPSLoadWord mipsLoadWord = new MIPSLoadWord(reg, Register.$zero, mipslabel, reference);
             mipsTextSegments.add(mipsLoadWord);
         }
-        else if (Character.isDigit(c)) {
+        else if (label.matches("-?\\d+")) {
             int imm = Integer.parseInt(label);
             MIPSLoadImm mipsLoadImm = new MIPSLoadImm(reg, imm, reference);
             mipsTextSegments.add(mipsLoadImm);

@@ -16,12 +16,14 @@ public class MIPSMove implements MIPS {
     }
 
     public void print(StringBuilder strb) {
-        strb.append("    ");
-        strb.append("move ");
-        strb.append(dstreg.toString());
-        strb.append(", ");
-        strb.append(srcreg.toString());
-        strb.append("   #");
-        reference.print(strb);
+        if (srcreg != dstreg) {
+            strb.append("    ");
+            strb.append("move ");
+            strb.append(dstreg.toString());
+            strb.append(", ");
+            strb.append(srcreg.toString());
+            strb.append("   #");
+            reference.print(strb);
+        }
     }
 }
