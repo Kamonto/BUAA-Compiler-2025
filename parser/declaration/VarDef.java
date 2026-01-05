@@ -144,6 +144,9 @@ public class VarDef {
                 llvms.addLLVM(llvmAllocArr);
                 if (hasInitValue) {
                     ArrayList<String> initlabels = initVal.llvmGenerate(symbols, scope, llvms);
+                    for (int i = initlabels.size(); i < size; i++) {
+                        initlabels.add("0");
+                    }
                     int initsize = initlabels.size();
                     for (int i = 0; i < initsize; i++) {
                         if (!initlabels.get(i).equals("0")) {

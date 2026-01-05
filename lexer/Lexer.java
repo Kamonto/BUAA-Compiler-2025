@@ -155,6 +155,9 @@ public class Lexer {
                 else if (getCharFromCode(nowat) == '*') {
                     nowat++;
                     while (nowat < size && (getCharFromCode(nowat) != '*' || getCharFromCode(nowat + 1) != '/')) {
+                        if (getCharFromCode(nowat) == '\n') {
+                            nowline++;
+                        }
                         nowat++;
                     }
                     nowat += 2;

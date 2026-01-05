@@ -98,16 +98,6 @@ public class MulExp {
                     int res = Integer.parseInt(label1) / Integer.parseInt(label2);
                     reslabel = Integer.toString(res);
                 }
-                else if (label2.matches("-?\\d+") && isPosPowOfTwo(Integer.parseInt(label2))) {
-                    int n = Integer.parseInt(label2);
-                    if (n == 1) {
-                        reslabel = label1;
-                    }
-                    else {
-                        int logn = Integer.numberOfTrailingZeros(i);
-                        
-                    }
-                }
                 else {
                     reslabel = "%" + scope.allocNumber();
                     LLVMSdiv llvmSdiv = new LLVMSdiv(reslabel, label1, label2);
@@ -129,9 +119,5 @@ public class MulExp {
             }
         }
         return reslabel;
-    }
-
-    private boolean isPosPowOfTwo(int n) {
-        return n > 0 && (n & (n - 1)) == 0;
     }
 }

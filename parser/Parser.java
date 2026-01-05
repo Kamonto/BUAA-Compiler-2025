@@ -838,8 +838,15 @@ public class Parser {
             }
             nowat++;
             if (getTokenFromTokens(nowat).getTokenType() != RPARENT) {
-                hasFuncRParams = true;
-                funcRParams = parseFuncRParams();
+                TokenType token2 = getTokenFromTokens(nowat).getTokenType();
+                if (token2 == PLUS || token2 == MINU || token2 == NOT || token2 == LPARENT || token2 == IDENFR || token2 == INTCON) {
+                    hasFuncRParams = true;
+                    funcRParams = parseFuncRParams();
+                }
+                else {
+                    hasFuncRParams = false;
+                    funcRParams = null;
+                }
                 if (getTokenFromTokens(nowat).getTokenType() != RPARENT) {
                     error(getTokenFromTokens(nowat - 1).getLine(), RPARENT, getTokenFromTokens(nowat).getTokenType());
                     errorList.addError(new Error(getTokenFromTokens(nowat - 1).getLine(), 'j'));
